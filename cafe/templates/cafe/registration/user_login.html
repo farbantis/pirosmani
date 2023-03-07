@@ -1,0 +1,45 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block main_content %}
+
+    <div class="container">
+        {% if form.errors %}
+            <p> {{ form.errors }} {{ form.has_error }} {{ form.non_field_errors }} </p>
+        {% endif %}
+        <div class="row_login">
+            <div class="login_picture login_align">
+                <img class="login_picture_inner" src="{% static 'cafe/images/details/register/person.svg' %}" alt="img">
+            </div>
+            <div class="login_title">
+                Войти в личный кабинет
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="login_username login_align">
+                    {{ form.username.errors }}
+                    {{ form.username }}
+                </div>
+                <div class="login_password login_align">
+                    {{ form.password }}
+                </div>
+                {#                {{ form.as_p }}#}
+                <div class="login_forgot login_align">
+                    <a class="login_forgot_inner" href="#">Забыли пароль</a>
+                </div>
+                <div class="login_btn">
+                    <button class="login_btn_inner" type="submit">ВОЙТИ</button>
+                </div>
+            </form>
+            <div class="login_register login_align">
+                Впервые у нас? &nbsp <a class="login_register_inner"> Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
+
+

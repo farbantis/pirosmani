@@ -1,0 +1,134 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+            Title
+        {% endblock %}
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'cafe/css/main.css' %}">
+    {% block jstop %}
+    {% endblock %}
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header_row">
+      <div class="h_first_logo">
+        <a href="{% url 'cafe:main_page' %}"><img class="h_img" src="{% static 'cafe/images/details/h_first_logo1.jpg' %}"></a>
+      </div>
+      <div class="h_second_logo">
+        <a href="{% url 'cafe:main_page' %}"><img class="h_img" src="{% static 'cafe/images/details/h_second_logo1.jpg' %}"></a>
+      </div>
+      <nav class="h_menu">
+        <ul class="h_menu_list">
+          <li>
+            <div class="dropdown">
+              <button class="dropbtn">Меню</button>
+              <div class="dropdown-content">
+
+                  {% for item in main_menu %}
+                      <a href="{% url 'cafe:main_page' group=item.id %}"><img class="dropdown-img" src="{{ item.picture.url }}" alt="pic">{{ item }}</a>
+                  {% endfor %}
+
+              </div>
+            </div>
+          </li>
+          <li><a href="#">Доставка</a></li>
+          <li><a href="#">Оплата</a></li>
+          <li><a href="#">Бронь стола</a></li>
+        </ul>
+      </nav>
+
+      <div class="h_phone"> <img src="{% static 'cafe/images/details/phone.svg' %}"> +8 (044) 987-52-55</div>
+      <div class="h_login">
+        {% if user.is_authenticated %}
+          <div class="h_login_inner">
+              <a href="{% url 'cafe:user_dashboard' %}">{{ request.user }}</a>
+          </div>
+        {% else %}
+        <a href="{% url 'cafe:login' %}">
+            <img class="h_img start-btn" src="{% static 'cafe/images/details/person.svg' %}">
+        </a>
+        {% endif %}
+      </div>
+      <div class="h_basket">
+        <a href="{% url 'cafe:cart' %}">
+            <img class="h_img" src="{% static 'cafe/images/details/shopping-cart.svg' %}">
+            <p class="cart_indicator">{{ cart_items }}</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="promo">
+    {% block promo %}
+    {% endblock %}
+</section>
+
+<section class="menu">
+    {% block menu %}
+    {% endblock %}
+
+</section>
+
+<section class="main">
+    {% block main_content %}
+    {% endblock %}
+</section>
+
+<section class="paginator">
+    {% block paginator %}
+    {% endblock %}
+</section>
+
+<section class="video">
+    {% block video %}
+    {% endblock %}
+</section>
+
+<section class="delivery">
+    {% block delivery %}
+    {% endblock %}
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-top-contact">
+        <div class="ftc-phones">
+          <div class="text1">Бесплатный звонок по УКР</div>
+          <div class="text1">Для приема заказов</div>
+          <div class="phone1">+9 (831) 282-60-00</div>
+          <div class="phone1">+9 (904) 066-46-85</div>
+        </div>
+        <div class="ftc-working">График работы по будням с 9:00 до 18:00</div>
+        <div class="ftc-email">Email: info@.ru</div>
+      </div>
+      <div class="footer-top-social"></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="support">
+        <div class="support-title">Поддержка</div>
+        <div class="support-items">
+          <div class="support-items-copyright">©2020. Пиросмани</div>
+          <div class="support-items-terms">Условия и соглашения</div>
+          <div class="support-items-policy">Политика конфиденциальности</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+{% block jscode %}
+{% endblock %}
+
+</body>
+</html>

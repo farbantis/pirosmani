@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Sliding Modal Box Style</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <!--Jquery CDN link -->
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <!-- CSS file -->
+    <link rel="stylesheet" href="{% static 'registration/css/style.css' %}">
+    <!-- JavaScript file-->
+    <script src="{% static 'registration/js/function.js' %}"></script>
+
+</head>
+<body>
+<!--Home page popup button-->
+<div class="start-btn">
+    <a href="#">Registration</a>
+</div>
+<!--popup box-->
+<div class="center modal-box">
+    <!--cancle button-->
+    <div class="fas fa-times"></div>
+
+    <!--Registration form-->
+    <div class="form_container">
+
+{# action="{% url 'registration:register' %}"#}
+        <form id="form" name="form" method="post">
+            {% csrf_token %}
+            <!--username input-->
+            <div class="form_wrap">
+                <div class="form_item">
+                    <label>Username</label>
+                    <input id="username" name="username" type="text">
+                    <div class="error"></div>
+                </div>
+            </div>
+            <!-- name input box-->
+            <div class="form_wrap form_grp">
+                <div class="form_item">
+                    <label>First Name</label>
+                    <input id="first_name" name="first_name" type="text">
+                </div>
+                <div class="form_item">
+                    <label>Last Name</label>
+                    <input id="last_name" name="last_name" type="text">
+                </div>
+            </div>
+            <!-- email input-->
+            <div class="form_wrap">
+                <div class="form_item">
+                    <label>Email Address</label>
+                    <input id="email" name="email" type="text">
+                </div>
+            </div>
+            <!--password and confirm password-->
+            <div class="form_wrap form_grp">
+                <div class="form_item">
+                    <label>Password</label>
+                    <input id="password" name="password" type="password">
+                </div>
+                <div class="form_item">
+                    <label>Confirm Password</label>
+                    <input id="password2" name="password2" type="password">
+                </div>
+            </div>
+
+            <!--phone no input-->
+            <div class="form_wrap">
+                <div class="form_item">
+                    <label>Phone</label>
+                    <input id="phone" name="phone" type="text">
+                    <div class="error"></div>
+                </div>
+            </div>
+            <!--username input-->
+            <div class="form_wrap">
+                <div class="form_item">
+                    <label>Date of birth</label>
+                    <input id="birth_date" name="birth_date" type="date">
+                    <div class="error"></div>
+                </div>
+            </div>
+            <!--submit button-->
+            <div class="btn">
+                <input type="submit" value="ЗАРЕГИСТРИРОВАТЬСЯ">
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+<script>
+let form = document.getElementById('form'); // selecting the form
+console.log('1')
+// 1 Adds a submit event listener to the form.
+form.addEventListener('submit', function(event) { // 1
+    {#event.preventDefault()#}
+console.log('2')
+    //2 Creates a new form in JavaScript.
+    let data = new FormData(); // 2
+
+    data.append("username", document.getElementById('username').value)
+    data.append("first_name", document.getElementById('first_name').value)
+    data.append("last_name", document.getElementById('last_name').value)
+    data.append("email", document.getElementById('email').value)
+    data.append("password", document.getElementById('password').value)
+    data.append("password2", document.getElementById('password2').value)
+    data.append("phone", document.getElementById('phone').value)
+    data.append("birth_date", document.getElementById('birth_date').value)
+    // 3 Adds a CRSF token.
+    data.append("csrfmiddlewaretoken", '{{csrf_token}}') // 3
+    console.log('3 - data Is')
+    console.log(data)
+
+    // 4 we use axios.post method to submit form data
+    axios.post('http://127.0.0.1:8000/registration/register/', data) // 4
+
+        // 5 A Form Submitted alert message pop on your browser if the form is submitted successfully.
+     .then(res => alert("Вы успешно зарегистрировались")) // 5
+        // 6 this catches and displays the error in the console if an error occurs when submitting the form
+
+     .catch(errors => console.log(errors)) // 6
+})
+
+</script>
+
+<script src="/registration/static/registration/js/function.js"></script>
+
+</body>
+</html>
+
