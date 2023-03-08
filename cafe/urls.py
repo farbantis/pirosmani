@@ -17,7 +17,8 @@ urlpatterns = [
     path('cafe/update-cart/', update_cart, name='update-cart'),
     path('cafe/cart/', cart, name='cart'),
     path('cafe/<str:group>/', main_page, name='main_page'),
+    path('cafe/product/<slug:slug>/', ProductDetailView.as_view(), name='product_detail'),
     path('', main_page, name='main_page'),
     # path('<str:group>', main_page, name='main_page'),
-    path('cafe/product/<slug:slug>/', ProductDetailView.as_view(), name='product_detail'),
+
 ]
