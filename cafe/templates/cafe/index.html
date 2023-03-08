@@ -6,25 +6,27 @@
 {% endblock %}
 
 {% block jstop %}
-<script>
-let user = '{{ request.user }}'
-function getToken(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    <script>
+        let user = '{{ request.user }}'
+
+        function getToken(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
-    }
-}
-return cookieValue;
-}
-const csrftoken = getToken('csrftoken');
-</script>
+
+        const csrftoken = getToken('csrftoken');
+    </script>
 {% endblock %}
 
 {% block promo %}
@@ -36,49 +38,45 @@ const csrftoken = getToken('csrftoken');
 {% endblock %}
 
 {% block main_content %}
-<div class="container">
-    <div class="main-row">
-      <div class="main-title">
-          Все товары категории
-      </div>
-      <div class="main-cards">
-        <div class="main-cards-row">
+    <div class="container">
+        <div class="main-row">
+            <div class="main-title">
+                Все товары категории
+            </div>
+            <div class="main-cards">
+                <div class="main-cards-row">
+                    {% for item in offer %}
+                        <div class="card">
+                            <img class="card-photo-img" src="{{ item.picture.url }}">
 
-          {% for item in offer %}
-          <div class="card">
-            <div class="card-photo">
-              <img class="card-photo-img" src="{{ item.picture.url }}">
+                            <a href="{% url 'cafe:product_detail' item.slug %}">
+                                <div class="card-title">
+                                    {{ item.name }}
+                                </div>
+                                <div class="card-descriptions">
+                                    {{ item.description }}
+                                </div>
+                            </a>
+                            <div class="card-rating">
+                                <img src="{% static 'cafe/images/details/star.svg' %}">
+                                <img src="{% static 'cafe/images/details/star.svg' %}">
+                                <img src="{% static 'cafe/images/details/star.svg' %}">
+                                <img src="{% static 'cafe/images/details/star.svg' %}">
+                                <img src="{% static 'cafe/images/details/star.svg' %}">
+                            </div>
+                            <div class="card-price-main">{{ item.price }} грн</div>
+                            <div class="card-price-weight">За {{ item.weight }}гр.</div>
+                            <button data-product="{{ item.id }}" data-action="add" class="card-btn update-cart">
+                                В корзину
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="card-content">
-                <a href="{% url 'cafe:product_detail' item.slug  %}">
-                  <div class="card-title">
-                    {{ item.name }}
-                  </div>
-                  <div class="card-descriptions">
-                    <p>{{ item.description  }}</p>
-                  </div>
-                </a>
-              <div class="card-rating">
-                <img src="{% static 'cafe/images/details/star.svg' %}">
-                <img src="{% static 'cafe/images/details/star.svg' %}">
-                <img src="{% static 'cafe/images/details/star.svg' %}">
-                <img src="{% static 'cafe/images/details/star.svg' %}">
-                <img src="{% static 'cafe/images/details/star.svg' %}">
-              </div>
-              <div class="card-price">
-                  <div class="card-price-main">{{ item.price }} грн</div>
-                  <div class="card-price-weight">За {{ item.weight }}гр.</div>
-              </div>
-              <button data-product="{{ item.id }}" data-action="add" class="card-btn update-cart">В корзину</button>
-            </div>
-          </div>
-          {% endfor %}
-          </div>
-          </div>
         </div>
-      </div>
     </div>
-</div>
+    </div>
+    </div>
 {% endblock %}
 
 {% block paginator %}

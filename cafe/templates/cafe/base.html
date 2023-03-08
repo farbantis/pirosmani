@@ -52,7 +52,7 @@
               <a href="{% url 'cafe:user_dashboard' %}">{{ request.user }}</a>
           </div>
         {% else %}
-        <a href="{% url 'cafe:login' %}">
+        <a href="{% url 'account:login' %}">
             <img class="h_img start-btn" src="{% static 'cafe/images/details/person.svg' %}">
         </a>
         {% endif %}

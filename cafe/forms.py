@@ -43,31 +43,35 @@ class UserEditForm(forms.ModelForm):
 
 
 class CustomerEditForm(forms.ModelForm):
-
-    class Meta:
-        model = Customer
-        fields = ('phone', 'birth_date')
-        widgets = {
-            'phone': TextInput(attrs={'class': 'login_username_inner', 'placeholder': 'телефон'}),
-            'birth_date': DateInput(attrs={'class': 'login_username_inner', 'placeholder': 'дата рождения'})
-        }
+    pass
+#
+#     class Meta:
+#         model = Customer
+#         fields = ('phone', 'birth_date')
+#         widgets = {
+#             'phone': TextInput(attrs={'class': 'login_username_inner', 'placeholder': 'телефон'}),
+#             'birth_date': DateInput(attrs={'class': 'login_username_inner', 'placeholder': 'дата рождения'})
+#         }
 
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(max_length=255, widget=forms.PasswordInput, label='Пароль')
-    password2 = forms.CharField(max_length=255, widget=forms.PasswordInput, label='Повторите пароль')
-    phone = forms.CharField(max_length=50, label='Телефон')
-    birth_date = forms.DateField(label='Дата рождения')
+    password2 = forms.CharField(max_length=255, widget=forms.HiddenInput, label='Повторите пароль')
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'phone', 'email', 'birth_date', 'password', 'password2')
+        fields = ('username', 'password', 'password2')
+        widgets = {
+            'username': TextInput(attrs={'class': 'login_username_inner', 'placeholder': 'username'}),
+            'password': TextInput(attrs={'class': 'login_username_inner', 'placeholder': 'password'}),
+            'email': TextInput(attrs={'class': 'login_username_inner', 'placeholder': 'confirm password'})
+        }
 
-    # def password1_clean(self):
-    #     if self.password != self.password2:
-    #         raise ValidationError('passwords not match')
-    #     else:
-    #         return self.password
+    def password_clean(self):
+        if self.password != self.password2:
+            raise ValidationError('passwords not match')
+        else:
+            return self.password
 
 
 # class CustomerRegistrationForm(forms.ModelForm):

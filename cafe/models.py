@@ -1,6 +1,6 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from account.models import Customer
 
 
 class Menu(models.Model):
@@ -18,8 +18,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='цена')
     weight = models.CharField(max_length=255, default=0)
     picture = models.ImageField(upload_to='products/')
-    picture_ext = models.ImageField(upload_to='products/', blank=True, null=True)
-    group = models.ForeignKey(Menu, on_delete=models.DO_NOTHING, default=1)
+    group = models.ForeignKey(Menu, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.name
@@ -28,23 +27,8 @@ class Product(models.Model):
         return reverse('cafe:product_detail', args=[self.slug, ])
 
 
-class Customer(models.Model):
-    class Status(models.TextChoices):
-        GOLDEN = 'Golden', 'Золотой'
-        SILVER = 'Silver', 'Серебрянный'
-        BRONZE = 'Bronze', "Бронзовый"
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=25)
-    birth_date = models.DateField(blank=True, default='1980-10-10')
-    status = models.CharField(max_length=10, choices=Status.choices, default=Status.BRONZE)
-
-    def __str__(self):
-        return str(self.user)
-
-
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.DO_NOTHING)
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     is_completed = models.BooleanField(default=False)
     transaction_id = models.CharField(max_length=10)
     date_ordered = models.DateTimeField(auto_now=True)
@@ -77,7 +61,7 @@ class Order(models.Model):
 class OrderItems(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
 
     @property
     def get_items_cost(self):

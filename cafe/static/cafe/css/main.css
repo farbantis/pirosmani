@@ -329,15 +329,15 @@ header{
 
 .card{
   max-width: 200px;
-  margin-bottom: 36px;
+  padding: 10px 0;
+  height: 410px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-photo-img{
   width: 100%;
-}
-
-.card-content{
-
 }
 
 .card-title{
@@ -346,16 +346,24 @@ header{
   font-size: 14px;
   line-height: 22px;
   margin-top: 10px;
+  text-align: center;
+  overflow: hidden;
+  height: 45px;
 }
 .card-descriptions{
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
   line-height: 19px;
+  text-align: center;
   margin-top: 5px;
+  padding: 5px 5px;
+  height: 80px;
+  overflow: hidden;
+
 }
 .card-rating{
-  margin-top: 13px;
+  margin: 8px auto;
 }
 .card-price{
   margin-top: 10px;
@@ -367,6 +375,7 @@ header{
   font-weight: 500;
   font-size: 18px;
   line-height: 23px;
+  margin: 0 auto;
 
 }
 
@@ -377,7 +386,7 @@ header{
   font-size: 13px;
   line-height: 23px;
   color: #828282;
-  margin-left: 20px;
+  margin: 0 auto;
 }
 
 .card-btn{
@@ -389,8 +398,105 @@ header{
   background: #00AC4E;
   border-radius: 5px;
   padding: 10px 27px;
-  margin-top: 13px;
+  margin: 5px auto;
 }
+
+
+
+
+
+
+/*.card{*/
+/*  max-width: 200px;*/
+/*  margin-bottom: 36px;*/
+/*  height: 400px;*/
+/*  position: relative;*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+/*}*/
+
+/*.card-photo-img{*/
+/*  width: 100%;*/
+/*}*/
+
+/*.card-content{*/
+/*  !*height: 200px;*!*/
+/*  flex-grow: 1;*/
+
+/*}*/
+
+/*.card-content-inner{*/
+/*  !*height: 150px;*!*/
+/*  !*display: flex;*!*/
+/*  !*flex-direction: column;*!*/
+/*}*/
+
+/*.card-title{*/
+/*  font-style: normal;*/
+/*  font-weight: bold;*/
+/*  font-size: 14px;*/
+/*  line-height: 22px;*/
+/*  margin-top: 10px;*/
+/*  !*height: 45px;*!*/
+/*}*/
+/*.card-descriptions{*/
+/*  font-style: normal;*/
+/*  font-weight: 400;*/
+/*  font-size: 13px;*/
+/*  line-height: 19px;*/
+/*  margin-top: 5px;*/
+/*  !*height: 100px;*!*/
+/*  flex-grow: 1;*/
+
+/*}*/
+/*.card-rating{*/
+/*  margin-top: 13px;*/
+/*}*/
+/*.card-price{*/
+/*  margin-top: 10px;*/
+/*  display: flex;*/
+/*}*/
+
+/*.card-price-main{*/
+/*  height: 23px;*/
+/*  font-weight: 500;*/
+/*  font-size: 18px;*/
+/*  line-height: 23px;*/
+
+/*}*/
+
+/*.card-price-weight{*/
+/*  height: 23px;*/
+/*  font-style: normal;*/
+/*  font-weight: 400;*/
+/*  font-size: 13px;*/
+/*  line-height: 23px;*/
+/*  color: #828282;*/
+/*  margin-left: 20px;*/
+/*}*/
+
+/*.card-btn{*/
+/*  max-width: 140px;*/
+/*  font-weight: 500;*/
+/*  font-size: 18px;*/
+/*  line-height: 14px;*/
+/*  color: #FFFFFF;*/
+/*  background: #00AC4E;*/
+/*  border-radius: 5px;*/
+/*  padding: 10px 27px;*/
+/*  margin-top: 13px;*/
+/*}*/
+
+
+
+
+
+
+
+
+
+
+
 
 .page-row{
   display: flex;
@@ -900,9 +1006,10 @@ header{
 }
 
 .btn_registration{
-  padding: 15px 60px;
+  padding: 15px 40px;
   background-color: #00AC4E;
   border-radius: 10px;
+  margin: 0 45px;
 }
 
 .row_login{
