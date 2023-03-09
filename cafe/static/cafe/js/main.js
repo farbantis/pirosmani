@@ -10,7 +10,7 @@ for (let i=0; i < cancelOrderItemBtn.length; i++) {
         const productId = this.dataset.cart_cancel;
         const action = 'removeOrderItem';
         const neededDiv = cancelOrderItemBtn[i]
-        console.log(`action detected productId: ${productId}, action ${action}, neededDiv ${neededDiv}`)
+        // console.log(`action detected productId: ${productId}, action ${action}, neededDiv ${neededDiv}`)
         updateCart(productId, action, neededDiv);
     })
 }
@@ -28,7 +28,7 @@ for (let i=0; i < addToCartBtn.length; i++) {
 }
 
 function updateCart(productId, action, neededDiv) {
-    // console.log('starting action backend')
+    console.log('starting action update')
     let url = '/cafe/update-cart/';
     fetch(url, {
         method: 'POST',

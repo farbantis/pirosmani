@@ -20,10 +20,10 @@
   <div class="container">
     <div class="header_row">
       <div class="h_first_logo">
-        <a href="{% url 'cafe:main_page' %}"><img class="h_img" src="{% static 'cafe/images/details/h_first_logo1.jpg' %}"></a>
+        <a href="{% url 'cafe:main_page' %}"><img class="h_img" src="{% static 'cafe/images/details/h_first_logo1.jpg' %}" alt="cafe"></a>
       </div>
       <div class="h_second_logo">
-        <a href="{% url 'cafe:main_page' %}"><img class="h_img" src="{% static 'cafe/images/details/h_second_logo1.jpg' %}"></a>
+        <a href="{% url 'cafe:main_page' %}"><img class="h_img" src="{% static 'cafe/images/details/h_second_logo1.jpg' %}" alt="cafe"></a>
       </div>
       <nav class="h_menu">
         <ul class="h_menu_list">
@@ -39,7 +39,7 @@
               </div>
             </div>
           </li>
-          <li><a href="#">Доставка</a></li>
+          <li><a href="{% url 'cafe:delivery_terms' %}">Доставка</a></li>
           <li><a href="#">Оплата</a></li>
           <li><a href="#">Бронь стола</a></li>
         </ul>
@@ -49,7 +49,7 @@
       <div class="h_login">
         {% if user.is_authenticated %}
           <div class="h_login_inner">
-              <a href="{% url 'cafe:user_dashboard' %}">{{ request.user }}</a>
+              <a href="{% url 'account:user_dashboard' %}">кабинет</a>
           </div>
         {% else %}
         <a href="{% url 'account:login' %}">
@@ -59,8 +59,10 @@
       </div>
       <div class="h_basket">
         <a href="{% url 'cafe:cart' %}">
-            <img class="h_img" src="{% static 'cafe/images/details/shopping-cart.svg' %}">
-            <p class="cart_indicator">{{ cart_items }}</p>
+            <img class="h_img" src="{% static 'cafe/images/details/shopping-cart.svg' %}"/>
+            {% if cart_items %}
+                <span class="cart_indicator">{{ cart_items }}</span>
+            {% endif %}
         </a>
       </div>
     </div>

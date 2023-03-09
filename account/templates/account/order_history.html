@@ -15,16 +15,18 @@
                         <p>Способ оплаты:</p>
                         <p>Дата заказа: <span class="order_card_date">{{ user_order.date_ordered }}</span></p>
                         <p>Дата доставки:</p>
-                        <p>Статус заказа: <span class="order_card_date"> {% if user_order.is_completed %} Завершен {% else %} Не завершен
-
-                        {% endif %} </span></p>
+                        <p>Статус заказа: <span class="order_card_date">
+                            {% if user_order.is_completed %}
+                                Завершен
+                            {% else %}
+                                Не завершен
+                            {% endif %} </span></p>
                     </div>
                     <div class="history_items">
-{#                        {% for item in user_order.orderitems_set.values %}#}
                         {% for item in user_order.orderitems_set.all %}
                             <div class="history_items_wrapper">
                                 <div class="history_picture">
-                                    <img src="{{ item.product.picture.url }}" width="100px">
+                                    <img src="{{ item.product.picture.url }}" width="100px" alt="prod pict">
                                 </div>
                                 <div class="history_data_wrapper">
                                     <div class="history_product_name">
@@ -34,7 +36,7 @@
                                         {{ item.quantity }} шт
                                     </div>
                                     <div>
-                                        {{ item.get_item_cost }} грн
+                                        {{ item.get_items_cost }} грн
                                     </div>
                                 </div>
                             </div>

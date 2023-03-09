@@ -1,12 +1,9 @@
-{#{% extends 'cafe/base.html' %}#}
+{% extends 'cafe/base.html' %}
 {% load static %}
 
 {% block main_content %}
 
     <div class="container">
-        {% if form.errors %}
-            <p> {{ form.errors }} {{ form.has_error }} {{ form.non_field_errors }} </p>
-        {% endif %}
         <div class="row_login">
             <div class="login_picture login_align">
                 <img class="login_picture_inner" src="{% static 'account/images/details/register/person.svg' %}" alt="img">

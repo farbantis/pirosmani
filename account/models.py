@@ -10,7 +10,7 @@ class User(AbstractUser):
     class Types(models.TextChoices):
         CUSTOMER = 'C', _('Customer')
         ADMIN = 'A', _('Admin')
-    type = models.CharField(_('user type'), max_length=50, choices=Types.choices)
+    type = models.CharField(_('user type'), max_length=50, choices=Types.choices, default=Types.CUSTOMER)
     email = models.EmailField(_("email address"), unique=True)
     username = None
     USERNAME_FIELD = "email"
@@ -68,6 +68,7 @@ class CustomerAdd(models.Model):
         PLATINUM = 'PLATINUM', 'PLATINUM'
 
     user = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    birth_date = models.DateField(blank=True, null=True)
     status = models.CharField(max_length=15, choices=CustomerStatus.choices, default=CustomerStatus.BRONZE)
     bonus = models.IntegerField(default=0)
     amount_of_purchase = models.IntegerField(default=0)
