@@ -773,7 +773,9 @@ header{
 .order_total{}
 .order_total_title{}
 .order_total_figure{}
+
 .order_btn{
+  /*display: block;*/
   background-color: #00AC4E;
   border-radius: 5px;
   padding: 16px 21px;

@@ -1,9 +1,7 @@
 import json
 from django.contrib import messages
-from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
@@ -14,6 +12,7 @@ from .models import Menu, Product, Order, OrderItems
 
 
 class Index(ListView):
+    """shows the index page with dishes"""
     template_name = 'cafe/index.html'
     context_object_name = 'offer'
 
@@ -27,12 +26,14 @@ class Index(ListView):
 
 
 class ProductDetailView(DetailView):
+    """shows detals for dish including comments calories and description"""
     model = Product
     context_object_name = 'product'
     template_name = 'cafe/product_detail.html'
 
 
 def cart(request):
+    """handles cart details"""
     menu = Menu.objects.all()
     if request.user.is_authenticated:
         customer = request.user
@@ -51,6 +52,7 @@ def cart(request):
 
 
 def update_cart(request):
+    """handles all crud on cart - js"""
     data = json.loads(request.body)
     # print(f'data is {data}')
     productId = data['productId']
@@ -87,3 +89,10 @@ def delivery_terms(request):
 
 def payment_terms(request):
     return render(request, 'cafe/payment_terms.html')
+
+
+def order_checkout(request):
+    order = Order.objects.get(customer=request.user, is_completed=False)
+    order.is_completed = True
+    order.save()
+    return redirect('/')

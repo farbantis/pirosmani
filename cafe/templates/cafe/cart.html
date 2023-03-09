@@ -66,6 +66,7 @@ const csrftoken = getToken('csrftoken');
 
             <div class="delivery"></div>
         </div>
+        {% if cart_content %}
         <div class="right">
             <div class="oder">
                 <div class="order_number">
@@ -78,14 +79,14 @@ const csrftoken = getToken('csrftoken');
                     </div>
                     <div class="order_promo">
                         <div class="order_promo_title">Промокод</div>
-                        <div class="order_promo_figure">- 0 грн</div>
+                        <div class="order_promo_figure"> 0 грн</div>
                     </div>
 
                     <div class="order_total">
                         <div class="order_total_title">Итого к оплате</div>
                         <div class="order_total_figure">{{ order.get_order_cost }} грн</div>
                     </div>
-                    <button class="order_btn">Оформить заказ</button>
+                    <button id="place_order_btn" class="order_btn">Оформить заказ</button>
                 </div>
             </div>
             <div class="coupon">
@@ -97,8 +98,15 @@ const csrftoken = getToken('csrftoken');
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    document.getElementById("place_order_btn").addEventListener("click", function() {
+    window.location.href = "{% url 'cafe:order_checkout' %}";
+  });
+</script>
 {% endblock %}
 
 {% block jscode %}
