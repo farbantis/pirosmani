@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,7 +10,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
 from django.views.generic import ListView, CreateView, UpdateView
 
-from cafe.models import Order, OrderItems
+from cafe.models import Order, OrderItems, Product
 from .forms import UserRegistrationForm, UserLoginForm, UserEditForm, CustomerAddEditForm
 from .models import Customer
 
@@ -64,9 +66,26 @@ class UserLoginView(LoginView):
         """Return the user-originating redirect URL if it's safe."""
         if self.request.user.is_staff:
             pass
-            # redirect_to = '/review_merchandise/'
+            # redirect_to = '/admin_panel/'
         else:
             return '/'
+
+    # def form_valid(self, form):
+    #     cart = json.loads(self.request.COOKIES.get('cart', '[]'))
+    #     response = super().form_valid(form)
+    #     if cart:
+    #         cart = {int(key): value for key, value in cart.items()}
+    #         order, created = Order.objects.get_or_create(customer=self.request.user, is_completed=False)
+    #         print('ready...')
+    #         print(f'cart {cart}')
+    #         for item in cart:
+    #             print(f'item: {item}')
+    #             tmp = Product.objects.get(id=item)
+    #             OrderItems.objects.create(
+    #                 order=order,
+    #                 product=tmp,
+    #                 quantity=int(cart[item]['quantity']))
+    #     return response
 
 
 class UserLogoutView(LogoutView):

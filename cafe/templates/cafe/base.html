@@ -60,9 +60,7 @@
       <div class="h_basket">
         <a href="{% url 'cafe:cart' %}">
             <img class="h_img" src="{% static 'cafe/images/details/shopping-cart.svg' %}"/>
-            {% if cart_items %}
-                <span class="cart_indicator">{{ cart_items }}</span>
-            {% endif %}
+                <span id="cart_indicator" class="cart_indicator"></span>
         </a>
       </div>
     </div>

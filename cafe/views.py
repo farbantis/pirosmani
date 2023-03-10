@@ -35,158 +35,104 @@ class ProductDetailView(DetailView):
 
 def cart(request):
     """handles cart details"""
-    print('DISPLAYING CART')
+    total_value = 0
     if request.user.is_authenticated:
         customer = request.user
         order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
         cart_content = order.orderitems_set.filter(quantity__gt=0)
-        print('content', cart_content)
         products = ''
     else:
         cart_content = json.loads(request.COOKIES.get('cart', '[]'))
-        print(f'zero rem before {cart_content}')
-        cart_content = {int(key): value for key, value in cart_content.items() if value['quantity'] > 0}
-        print(f'zero rem after {cart_content}')
-        products = Product.objects.filter(id__in=cart_content.keys())
-        print(cart_content)
-        for product in products:
-            product.quantity = cart_content[product.id]['quantity']
-            product.total = cart_content[product.id]['quantity'] * product.price
+        if cart_content:
+            cart_content = {int(key): value for key, value in cart_content.items()}
+            products = Product.objects.filter(id__in=cart_content.keys())
+            for product in products:
+                product.quantity = cart_content[product.id]['quantity']
+                product.total = float(cart_content[product.id]['quantity'] * product.price)
+                total_value += product.total
         order = {}
-        print(products)
 
     context = {
         'cart_content': cart_content,
         'order': order,
-        'product': products
+        'pcs_ordered': len(cart_content)
         }
+    if total_value:
+        context.update({'total_value': total_value, 'product': products})
     return render(request, 'cafe/cart.html', context)
 
 
 def update_cart(request):
     """handles all CRUD on cart - JS"""
-    print('UPDATING CART')
     data = json.loads(request.body)
     productId = int(data['productId'])
     action = data['action']
-    print(f'product id is {productId}, {type(productId)}')
     product = Product.objects.get(id=productId)
-    print(f'action is {action}')
-    print(f'product is {product}')
+    print(f'PRODUCT {product}')
 
     if request.user.is_authenticated:
-        print('USER AUTHENTICATED')
+        print('AUTHENTICATED')
         # Get or create cart for logged in user
-        customer = request.user
-        order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
+        order, created = Order.objects.get_or_create(customer=request.user, is_completed=False)
+        print(f'order {order}')
         order_item, created = OrderItems.objects.get_or_create(order=order, product=product)
-        if action == 'add':
-            order_item.quantity += 1
-            order_item.save()
-        elif action == 'remove':
-            order_item.quantity -= 1
-            if order_item.quantity <= 0:
-                order_item.delete()
-            else:
+        match action:
+            case 'add':
+                order_item.quantity += 1
                 order_item.save()
-        elif action == 'removeOrderItem':
-            order_item.delete()
+            case 'remove':
+                order_item.quantity -= 1
+                if order_item.quantity <= 0:
+                    order_item.delete()
+                else:
+                    order_item.save()
+            case 'removeOrderItem':
+                print('removing.....')
+                order_item.delete()
+        pcs_ordered = OrderItems.objects.filter(order=order).count()
         information = {
             'quantity': order_item.quantity,
             'total_item': order_item.get_items_cost,
-            'productId': order_item.product.id
+            'productId': order_item.product.id,
+            'pcs_ordered': pcs_ordered
         }
         return JsonResponse(information, safe=False)
     else:
-        print('USER IS ANONYMOUS')
-        # Get cart from cookies for anonymous user
+        print('ANONYMOUS USER IN ACTION')
+        # handle cart for anonymous user
         cart = json.loads(request.COOKIES.get('cart', '[]'))
         cart = {int(key): value for key, value in cart.items()}
-        print(f'cart is {cart}')
-        # cart.setdefault(productId, )
 
-        if action == 'add':
-            if productId not in cart:
-                print('productID not in cart')
-                cart.update({productId: {
-                    'product': product.name,
-                    'quantity': 0,
-                    'total_item': product.price * cart['quantity']
-                }})
-            cart[productId]['quantity'] = cart[productId].get('quantity', 0) + 1
-        elif action == 'remove':
-            cart[productId]['quantity'] = cart[productId].get('quantity', 0) - 1
-            if cart[productId]['quantity'] <= 0:
+        # case action:
+        match action:
+            case 'add':
+                if productId not in cart:
+                    cart.update({productId: {
+                        'product': product.name,
+                    }})
+                cart[productId]['quantity'] = cart[productId].get('quantity', 0) + 1
+                cart[productId]['total_item'] = float(product.price * cart[productId]['quantity'])
+            case 'remove':
+                cart[productId]['quantity'] = cart[productId].get('quantity', 0) - 1
+                if cart[productId]['quantity'] <= 0:
+                    cart[productId]['quantity'] = 0
+                    del cart[productId]
+            case 'removeOrderItem':
                 cart[productId]['quantity'] = 0
-                # del cart[productId]
-        elif action == 'removeOrderItem':
-            cart[productId]['quantity'] = 0
-            # del cart[productId]
-        print(f'cart after action {cart}')
+                del cart[productId]
+            case _:
+                raise ValueError('unexpected data')
+
         information = {
-            'quantity': cart[productId].get('quantity', 0),
-            'total_item': cart[productId].get('quantity', 0) * product.price,
-            'productId': productId
+            'quantity': cart[productId].get('quantity', 0) if cart.get(productId, 0) else 0,
+            'total_item': cart[productId].get('quantity', 0) * product.price if cart.get(productId, 0) else 0,
+            'productId': productId,
+            'pcs_ordered': len(cart)
         }
         response = JsonResponse(information)
+        # cart = {}
         response.set_cookie('cart', json.dumps(cart))
         return response
-
-
-
-
-# def update_cart(request):
-#     """actions for a single item - handles all crud on cart item - js"""
-#     data = json.loads(request.body)
-#     productId = data['productId']
-#     action = data['action']
-#     product = Product.objects.get(id=productId)
-#     if request.user.is_authenticated:
-#         order, created = Order.objects.get_or_create(customer=request.user, is_completed=False)
-#         orderItem, created = OrderItems.objects.get_or_create(order=order, product=product)
-#     else:
-#         # Need to get one needed item Get cart from cookies for anonymous user
-#         cart = json.loads(request.COOKIES.get('cart', '[]'))
-#         print('THIS IS THE CART FOR ANONYMOUS')
-#         print(f'cart {cart}')
-#         orderItem = None
-#         if cart:
-#             print('in cart 1')
-#             for item in cart:
-#                 if item['productId'] == productId:
-#                     orderItem = {
-#                         'product': product,
-#                         'quantity': item['quantity'],
-#                         'item_total': item['quantity'] * product.price
-#                     }
-#                     break
-#         if not orderItem:
-#             print('in cart 2')
-#             orderItem = {
-#                 'product': product,
-#                 'quantity': 0,
-#                 'item_total': 0 * product.price
-#             }
-#
-#     if action == 'add':
-#         orderItem['quantity'] += 1
-#         orderItem.save()
-#     elif action == 'remove':
-#         orderItem.quantity -= 1
-#         if orderItem.quantity <= 0:
-#             orderItem.delete()
-#         else:
-#             orderItem.save()
-#     elif action == 'removeOrderItem':
-#         orderItem.delete()
-#
-#     information = {
-#         'quantity': orderItem.quantity,
-#         'total_item': orderItem.get_items_cost,
-#         # 'grand_total': order.get_order_cost,
-#         'productId': orderItem.product.id
-#     }
-#     return JsonResponse(information, safe=False)
 
 
 def delivery_terms(request):

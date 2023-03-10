@@ -116,7 +116,14 @@
                         <div class="order_card">
                             <div class="order_quantity">
                                 <div class="order_quantity_title">Товаров в корзине</div>
-                                <div data-grand_total class="order_quantity_figure">{{ order.get_order_cost }} грн</div>
+                                <div data-grand_total class="order_quantity_figure">
+                                    {% if reques.user.is_authenticated %}
+                                        {{ order.get_order_cost }}
+                                    {% else %}
+                                        {{ total_value }}
+                                    {% endif %}
+                                    грн
+                                </div>
                             </div>
                             <div class="order_promo">
                                 <div class="order_promo_title">Промокод</div>
@@ -127,7 +134,11 @@
                                 <div class="order_total_title">Итого к оплате</div>
                                 <div class="order_total_figure">{{ order.get_order_cost }} грн</div>
                             </div>
-                            <button id="place_order_btn" class="order_btn">Оформить заказ</button>
+                            <button id="place_order_btn" class="order_btn"
+                            {% if request.user.is_authenticated %}{% else %}disabled{% endif %}
+                            >
+                                {% if request.user.is_authenticated %}Оформить заказ {% else %} You need to
+                                    login {% endif %}</button>
                         </div>
                     </div>
                     <div class="coupon">
@@ -142,11 +153,18 @@
             {% endif %}
         </div>
     </div>
+        <script>
+            document.getElementById("place_order_btn").addEventListener("click", function () {
+                window.location.href = "{% url 'cafe:order_checkout' %}";
+            });
+        </script>
 
     <script>
-        document.getElementById("place_order_btn").addEventListener("click", function () {
-            window.location.href = "{% url 'cafe:order_checkout' %}";
-        });
+        console.log('in action', {{ pcs_ordered }})
+        const cart_indicator = document.getElementsByClassName('cart_indicator')[0]
+        cart_indicator.innerText =
+        {{ pcs_ordered }}
+        {#updateCartPicture({{ pcs_ordered }})#}
     </script>
 {% endblock %}
 
