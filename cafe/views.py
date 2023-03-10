@@ -35,15 +35,25 @@ class ProductDetailView(DetailView):
 
 def cart(request):
     """handles cart details"""
+    print('DISPLAYING CART')
     if request.user.is_authenticated:
         customer = request.user
         order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
         cart_content = order.orderitems_set.filter(quantity__gt=0)
+        print('content', cart_content)
         products = ''
     else:
         cart_content = json.loads(request.COOKIES.get('cart', '[]'))
+        print(f'zero rem before {cart_content}')
+        cart_content = {int(key): value for key, value in cart_content.items() if value['quantity'] > 0}
+        print(f'zero rem after {cart_content}')
         products = Product.objects.filter(id__in=cart_content.keys())
+        print(cart_content)
+        for product in products:
+            product.quantity = cart_content[product.id]['quantity']
+            product.total = cart_content[product.id]['quantity'] * product.price
         order = {}
+        print(products)
 
     context = {
         'cart_content': cart_content,
@@ -55,12 +65,17 @@ def cart(request):
 
 def update_cart(request):
     """handles all CRUD on cart - JS"""
+    print('UPDATING CART')
     data = json.loads(request.body)
-    productId = data['productId']
+    productId = int(data['productId'])
     action = data['action']
+    print(f'product id is {productId}, {type(productId)}')
     product = Product.objects.get(id=productId)
+    print(f'action is {action}')
+    print(f'product is {product}')
 
     if request.user.is_authenticated:
+        print('USER AUTHENTICATED')
         # Get or create cart for logged in user
         customer = request.user
         order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
@@ -83,22 +98,37 @@ def update_cart(request):
         }
         return JsonResponse(information, safe=False)
     else:
+        print('USER IS ANONYMOUS')
         # Get cart from cookies for anonymous user
         cart = json.loads(request.COOKIES.get('cart', '[]'))
+        cart = {int(key): value for key, value in cart.items()}
+        print(f'cart is {cart}')
         # cart.setdefault(productId, )
-        if productId not in cart:
-            cart.update({productId: {
-                'product': product.name,
-                'quantity': 0
-            }})
+
         if action == 'add':
+            if productId not in cart:
+                print('productID not in cart')
+                cart.update({productId: {
+                    'product': product.name,
+                    'quantity': 0,
+                    'total_item': product.price * cart['quantity']
+                }})
             cart[productId]['quantity'] = cart[productId].get('quantity', 0) + 1
         elif action == 'remove':
             cart[productId]['quantity'] = cart[productId].get('quantity', 0) - 1
             if cart[productId]['quantity'] <= 0:
-                del cart[productId]
-
-        response = JsonResponse({'productId': productId, 'quantity': cart[productId]['quantity']})
+                cart[productId]['quantity'] = 0
+                # del cart[productId]
+        elif action == 'removeOrderItem':
+            cart[productId]['quantity'] = 0
+            # del cart[productId]
+        print(f'cart after action {cart}')
+        information = {
+            'quantity': cart[productId].get('quantity', 0),
+            'total_item': cart[productId].get('quantity', 0) * product.price,
+            'productId': productId
+        }
+        response = JsonResponse(information)
         response.set_cookie('cart', json.dumps(cart))
         return response
 

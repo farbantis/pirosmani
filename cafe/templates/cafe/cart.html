@@ -37,7 +37,6 @@
                     Корзина
                 </div>
                 {% if request.user.is_authenticated %}
-
                     {% if cart_content %}
                         {% for item in cart_content %}
                             <div class="cart idd{{ item.product_id }}">
@@ -46,12 +45,7 @@
                                          src="{% static 'cafe/images/details/cart_cancel.svg' %}">
                                 </div>
                                 <div class="cart_picture">
-                                    <img src="
-                    {% if item.product.picture %}
-                        {{ item.product.picture.url }}
-                    {% else %}
-                        {% static 'cafe/images/details/cart_picture.png' %}
-                    {% endif %} ">
+                                    <img src="{{ item.product.picture.url }}">
                                 </div>
                                 <div class="cart_item">{{ item.product }}</div>
                                 <div class="cart_item_cost">
@@ -91,15 +85,15 @@
                                     {{ item.price }}x
                                 </div>
                                 <div class="cart_quantity">
-                                    <div data-product="{{ item.product.id }}" data-action="remove"
+                                    <div data-product="{{ item.id }}" data-action="remove"
                                          class="card_quantity_arrow update-cart">-
                                     </div>
                                     <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
-                                    <div data-product="{{ item.product.id }}" data-action="add"
+                                    <div data-product="{{ item.id }}" data-action="add"
                                          class="card_quantity_arrow update-cart">+
                                     </div>
                                 </div>
-                                <div data-item_total class="cart_price">{{ item.get_items_cost }} грн</div>
+                                <div data-item_total class="cart_price">{{ item.total }} грн</div>
                             </div>
                         {% endfor %}
                     {% else %}
@@ -107,13 +101,7 @@
                     {% endif %}
 
 
-
-
                 {% endif %}
-
-
-
-
 
 
 
