@@ -68,27 +68,35 @@ def update_cart(request):
     productId = int(data['productId'])
     action = data['action']
     product = Product.objects.get(id=productId)
-    print(f'PRODUCT {product}')
 
     if request.user.is_authenticated:
-        print('AUTHENTICATED')
         # Get or create cart for logged in user
         order, created = Order.objects.get_or_create(customer=request.user, is_completed=False)
-        print(f'order {order}')
         order_item, created = OrderItems.objects.get_or_create(order=order, product=product)
-        match action:
-            case 'add':
-                order_item.quantity += 1
-                order_item.save()
-            case 'remove':
-                order_item.quantity -= 1
-                if order_item.quantity <= 0:
-                    order_item.delete()
-                else:
-                    order_item.save()
-            case 'removeOrderItem':
-                print('removing.....')
+        # match action:
+        #     case 'add':
+        #         order_item.quantity += 1
+        #         order_item.save()
+        #     case 'remove':
+        #         order_item.quantity -= 1
+        #         if order_item.quantity <= 0:
+        #             order_item.delete()
+        #         else:
+        #             order_item.save()
+        #     case 'removeOrderItem':
+        #         order_item.delete()
+        if action == 'add':
+            order_item.quantity += 1
+            order_item.save()
+        elif action == 'remove':
+            order_item.quantity -= 1
+            if order_item.quantity <= 0:
                 order_item.delete()
+            else:
+                order_item.save()
+        elif action == 'removeOrderItem':
+            order_item.delete()
+
         pcs_ordered = OrderItems.objects.filter(order=order).count()
         information = {
             'quantity': order_item.quantity,
@@ -98,30 +106,43 @@ def update_cart(request):
         }
         return JsonResponse(information, safe=False)
     else:
-        print('ANONYMOUS USER IN ACTION')
         # handle cart for anonymous user
         cart = json.loads(request.COOKIES.get('cart', '[]'))
         cart = {int(key): value for key, value in cart.items()}
+        # match action:
+        #     case 'add':
+        #         if productId not in cart:
+        #             cart.update({productId: {
+        #                 'product': product.name,
+        #             }})
+        #         cart[productId]['quantity'] = cart[productId].get('quantity', 0) + 1
+        #         cart[productId]['total_item'] = float(product.price * cart[productId]['quantity'])
+        #     case 'remove':
+        #         cart[productId]['quantity'] = cart[productId].get('quantity', 0) - 1
+        #         if cart[productId]['quantity'] <= 0:
+        #             cart[productId]['quantity'] = 0
+        #             del cart[productId]
+        #     case 'removeOrderItem':
+        #         cart[productId]['quantity'] = 0
+        #         del cart[productId]
+        #     case _:
+        #         raise ValueError('unexpected data')
 
-        # case action:
-        match action:
-            case 'add':
-                if productId not in cart:
-                    cart.update({productId: {
-                        'product': product.name,
-                    }})
-                cart[productId]['quantity'] = cart[productId].get('quantity', 0) + 1
-                cart[productId]['total_item'] = float(product.price * cart[productId]['quantity'])
-            case 'remove':
-                cart[productId]['quantity'] = cart[productId].get('quantity', 0) - 1
-                if cart[productId]['quantity'] <= 0:
-                    cart[productId]['quantity'] = 0
-                    del cart[productId]
-            case 'removeOrderItem':
+        if action == 'add':
+            if productId not in cart:
+                cart.update({productId: {
+                    'product': product.name,
+                }})
+            cart[productId]['quantity'] = cart[productId].get('quantity', 0) + 1
+            cart[productId]['total_item'] = float(product.price * cart[productId]['quantity'])
+        elif action == 'remove':
+            cart[productId]['quantity'] = cart[productId].get('quantity', 0) - 1
+            if cart[productId]['quantity'] <= 0:
                 cart[productId]['quantity'] = 0
                 del cart[productId]
-            case _:
-                raise ValueError('unexpected data')
+        elif action == 'removeOrderItem':
+            cart[productId]['quantity'] = 0
+            del cart[productId]
 
         information = {
             'quantity': cart[productId].get('quantity', 0) if cart.get(productId, 0) else 0,
