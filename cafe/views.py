@@ -107,8 +107,11 @@ def update_cart(request):
         return JsonResponse(information, safe=False)
     else:
         # handle cart for anonymous user
-        cart = json.loads(request.COOKIES.get('cart', '[]'))
+        print('HANDLE ANONYMOUS USER')
+        cart = json.loads(request.COOKIES.get('cart', '{}'))
+        print(f'cart is {cart}')
         cart = {int(key): value for key, value in cart.items()}
+
         # match action:
         #     case 'add':
         #         if productId not in cart:
@@ -143,7 +146,7 @@ def update_cart(request):
         elif action == 'removeOrderItem':
             cart[productId]['quantity'] = 0
             del cart[productId]
-
+        print(f'after action {cart}')
         information = {
             'quantity': cart[productId].get('quantity', 0) if cart.get(productId, 0) else 0,
             'total_item': cart[productId].get('quantity', 0) * product.price if cart.get(productId, 0) else 0,

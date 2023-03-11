@@ -17,7 +17,7 @@ class Product(models.Model):
     description = models.TextField(blank=True, verbose_name="описание")
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='цена')
     weight = models.CharField(max_length=255, default=0)
-    picture = models.ImageField(upload_to='products/')
+    picture = models.ImageField(upload_to='products/', default='products/no-mpphoto.jpg')
     group = models.ForeignKey(Menu, on_delete=models.PROTECT)
 
     def __str__(self):

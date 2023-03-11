@@ -20,7 +20,8 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if self.type == self.Types.CUSTOMER:
-            CustomerAdd.objects.create(user_id=self.id)
+            if not hasattr(self, 'customeradd'):
+                CustomerAdd.objects.create(user_id=self.id)
 
 
 class AdminManager(models.Manager):
