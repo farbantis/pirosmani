@@ -3,7 +3,7 @@ from django.db import models
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 from .managers import UserManager
-from .tasks import change_status_notification
+from .tasks import change_status_notification, new_user_email_notification
 
 
 class User(AbstractUser):
@@ -21,7 +21,8 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
         if self.type == self.Types.CUSTOMER:
             if not hasattr(self, 'customeradd'):
-                CustomerAdd.objects.create(user_id=self.id)
+                user = CustomerAdd.objects.create(user_id=self.id)
+                new_user_email_notification.delay(user)
 
 
 class AdminManager(models.Manager):

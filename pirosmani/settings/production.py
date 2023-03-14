@@ -17,3 +17,7 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['localhost', '191.96.53.71', 'qimeer.online', '.qimeer.online']
 
+# CELERY SETTINGS
+broker_url = 'redis://191.96.53.71:6379/0'  # Use Redis on the VPS server
+result_backend = 'redis://191.96.53.71:6379/0'  # Use Redis on the VPS server
+

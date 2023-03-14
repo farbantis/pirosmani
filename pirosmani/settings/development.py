@@ -14,4 +14,9 @@ DATABASES = {
     }
 }
 
+# CELERY SETTINGS
+broker_url = 'redis://localhost'  # Use Redis on the local machine
+result_backend = 'redis://localhost'  # Use Redis on the local machine
+
+
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1']
