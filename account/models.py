@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 from .managers import UserManager
 from .tasks import change_status_notification, new_user_email_notification
@@ -18,11 +17,19 @@ class User(AbstractUser):
     objects = UserManager()
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.type == self.Types.CUSTOMER:
-            if not hasattr(self, 'customeradd'):
-                user = CustomerAdd.objects.create(user_id=self.id)
-                new_user_email_notification.delay(user)
+        created = not bool(self.id)
+        if created:
+            if self.is_staff:
+                self.type = self.Types.ADMIN
+            super().save(*args, **kwargs)
+            if self.type == self.Types.CUSTOMER:
+                self._following_customer_creation()
+        else:
+            super().save(*args, **kwargs)
+
+    def _following_customer_creation(self):
+        user = CustomerAdd.objects.create(user_id=self.id)
+        # new_user_email_notification.delay(user)
 
 
 class AdminManager(models.Manager):
@@ -81,7 +88,6 @@ class CustomerAdd(models.Model):
     @property
     def get_customer_status(self):
         """set the cinemagoer status based on the amount of purchases"""
-        # !! а если бы мы хотели подсчитываеть количество изменений статуса.... => записывать кол-во в бд?..
         lst_of_status_names = [x[0] for x in CustomerAdd.CustomerStatusLimits.customer_status_limits]
         previous_status = self.status
         # getting current status

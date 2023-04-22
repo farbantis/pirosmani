@@ -1,18 +1,14 @@
-import json
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
-from django.views.generic import ListView, CreateView, UpdateView
-
-from cafe.models import Order, OrderItems, Product
+from django.views.generic import CreateView, UpdateView
+from cafe.models import Order, OrderItems
 from .forms import UserRegistrationForm, UserLoginForm, UserEditForm, CustomerAddEditForm
-from .models import Customer
+from .models import Customer, User
 
 
 @login_required()
@@ -22,16 +18,12 @@ def user_dashboard(request):
 
 @login_required()
 def order_history(request):
-    # .select_related('customer__user')
     user_orders = Order.objects\
         .filter(customer=request.user)\
         .order_by('-date_ordered')
-    # .select_related('order__customer__user', 'product')
     user_order_items = OrderItems.objects\
         .filter(order__customer=request.user)
     # , order__is_completed = True
-    print(user_orders)
-    print(user_order_items)
     context = {'user_orders': user_orders,
                'user_order_items': user_order_items,
                }
@@ -70,23 +62,6 @@ class UserLoginView(LoginView):
         else:
             return '/'
 
-    # def form_valid(self, form):
-    #     cart = json.loads(self.request.COOKIES.get('cart', '[]'))
-    #     response = super().form_valid(form)
-    #     if cart:
-    #         cart = {int(key): value for key, value in cart.items()}
-    #         order, created = Order.objects.get_or_create(customer=self.request.user, is_completed=False)
-    #         print('ready...')
-    #         print(f'cart {cart}')
-    #         for item in cart:
-    #             print(f'item: {item}')
-    #             tmp = Product.objects.get(id=item)
-    #             OrderItems.objects.create(
-    #                 order=order,
-    #                 product=tmp,
-    #                 quantity=int(cart[item]['quantity']))
-    #     return response
-
 
 class UserLogoutView(LogoutView):
     """logout user"""
@@ -103,19 +78,19 @@ class UserPasswordChangeDoneView(PasswordChangeDoneView):
     pass
 
 
-@login_required
-def edit(request):
-    if request.method == 'POST':
-        user_form = UserEditForm(request.POST)
-        customer_form = CustomerAddEditForm(request.POST)
-        if user_form.is_valid() and customer_form.is_valid():
-            user_form.save()
-            customer_form.save()
-            messages.success(request, 'Profile updated successfully')
-            return redirect('account:user_dashboard')
-        else:
-            messages.error(request, 'Error updating your profile')
-    else:
-        user_form = UserEditForm()
-        customer_form = CustomerAddEditForm()
-    return render(request, 'account/user_edit.html', {'user_form': user_form, 'customer_form': customer_form})
+class ChangeUserDetailsView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserEditForm
+    template_name = 'account/user_edit.html'
+    success_url = reverse_lazy('account:user_dashboard')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['customer_add_form'] = CustomerAddEditForm(instance=self.object.customeradd)
+        return context
+
+    def form_valid(self, form):
+        customer_add_form = CustomerAddEditForm(self.request.POST, instance=self.object.customeradd)
+        if customer_add_form.is_valid():
+            customer_add_form.save()
+        return super().form_valid(form)

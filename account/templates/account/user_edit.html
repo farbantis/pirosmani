@@ -20,21 +20,15 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="login_username login_align">
-                    {{ form.username.errors }}
-                    {{ user_form.first_name }}
+                    {{ form.first_name }}
                 </div>
                 <div class="login_username login_align">
-                    {{ user_form.last_name.errors }}
-                    {{ user_form.last_name }}
+                    {{ form.last_name }}
                 </div>
                 <div class="login_username login_align">
-                    {{ user_form.email.errors }}
-                    {{ user_form.email }}
+                    {{ customer_add_form.birth_date }}
                 </div>
-                <div class="login_username login_align">
-                    {{ user_form.email.errors }}
-                    {{ customer_form.birth_date }}
-                </div>
+
                 <div class="login_btn">
                     <button class="login_btn_inner" type="submit">ИЗМЕНИТЬ</button>
                 </div>

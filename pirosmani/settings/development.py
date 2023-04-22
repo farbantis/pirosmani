@@ -2,6 +2,7 @@ from pathlib import Path
 from .base import INSTALLED_APPS, MIDDLEWARE
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+
 DEBUG = True
 INSTALLED_APPS += ["debug_toolbar"]
 
@@ -21,4 +22,4 @@ broker_url = 'redis://localhost'  # Use Redis on the local machine
 result_backend = 'redis://localhost'  # Use Redis on the local machine
 
 
-# ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']

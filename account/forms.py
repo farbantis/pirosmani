@@ -36,11 +36,10 @@ class UserEditForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email')
+        fields = ('first_name', 'last_name')
         widgets = {
             'first_name': TextInput(attrs={'class': 'login_username_inner', 'placeholder': 'имя'}),
             'last_name': TextInput(attrs={'class': 'login_username_inner', 'placeholder': 'фамилия'}),
-            'email': EmailInput(attrs={'class': 'login_username_inner', 'placeholder': 'электронная почта'})
         }
 
 
@@ -60,9 +59,3 @@ class UserPasswordChangeForm(PasswordChangeForm):
         self.fields['old_password'].widget.attrs.update({'class': 'login_password_inner'})
         self.fields['new_password1'].widget.attrs.update({'class': 'login_password_inner', 'placeholder': 'новый пароль'})
         self.fields['new_password2'].widget.attrs.update({'class': 'login_password_inner'})
-
-        # self.fields['new_password1'].widget.attrs.update({'class': 'login_password_inner', 'placeholder': 'новый пароль'})
-        # self.fields['new_password2'].widget.attrs.update({'class': 'login_password_inner', 'placeholder': 'новый пароль'})
-
-
-

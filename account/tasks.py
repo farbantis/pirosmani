@@ -5,14 +5,15 @@ from pirosmani.utils.constants import EMAIL_NEW_USER_REG
 
 @shared_task(expires=3600)  # time to execute - 1 hour
 def new_user_email_notification(user):
+    email = user.user.email
     subject = f'registration confirmation'
     message = f"""
-        Dear {user.email},
+        Dear {email},
         you successfully registered with pirosmani
         your status is {user.status}
     """
     from_email = EMAIL_NEW_USER_REG
-    recipient_list = [user.email]
+    recipient_list = [email]
     send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
 
