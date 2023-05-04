@@ -1,7 +1,6 @@
 const addToCartBtn = document.getElementsByClassName('update-cart');
 const cancelOrderItemBtn = document.getElementsByClassName('cart_cancel');
 
-
 for (let i=0; i < cancelOrderItemBtn.length; i++) {
     cancelOrderItemBtn[i].addEventListener('click', function () {
         const productId = this.dataset.cart_cancel;
@@ -37,29 +36,34 @@ function updateCart(productId, action, neededDiv) {
           .then((data) => {
              const quantity = data.quantity;
              const total = data.total_item;
-             const grand_total = data.grand_total;
-             // const pcs_ordered = data.pcs_ordered;
-             // updateCartPicture(pcs_ordered)
-             updateFrontEnd(productId, quantity, total, grand_total, neededDiv, action)
+             const grand_total_value = data.grand_total;
+             const total_pcs_ordered = data.pcs_ordered;
+             console.log('there response', quantity, total, grand_total_value)
+             console.log('pcs ordered ', total_pcs_ordered)
+             updateCartPicture(total_pcs_ordered, grand_total_value)
+             updateFrontEnd(productId, quantity, total, grand_total_value, neededDiv, action)
   });
 }
 
 
-function updateCartPicture(pcs_ordered) {
+function updateCartPicture(total_pcs_ordered, grand_total_value) {
+
     const cart_indicator = document.getElementsByClassName('cart_indicator')[0]
-    cart_indicator.innerText = pcs_ordered
+    const totalOrderFigure = document.getElementsByClassName('order_total_figure')[0]
+    cart_indicator.innerText = total_pcs_ordered
+    totalOrderFigure.innerHTML = grand_total_value
 }
 
 
-function updateFrontEnd(productId, quantity, total_item, grand_total, neededDiv, action) {
-    document.getElementsByClassName('order_total_figure')[0].innerHTML = grand_total
+function updateFrontEnd(productId, quantity, total_item, grand_total_value, neededDiv, action) {
+    // document.getElementsByClassName('order_total_figure')[0].innerHTML = grand_total
     if (action ==='remove') {
         const amountWrapper = neededDiv.closest('.cart_quantity');
         const counter = amountWrapper.querySelector('[data-counter]');
 
         if (counter.innerText > '1') {
             counter.innerText = --counter.innerText;
-            total(neededDiv, total_item, grand_total)
+            total(neededDiv, total_item, grand_total_value)
         }
         else {
             const childWrapper = neededDiv.closest('.cart');
@@ -71,7 +75,7 @@ function updateFrontEnd(productId, quantity, total_item, grand_total, neededDiv,
         const amountWrapper = neededDiv.closest('.cart_quantity');
         const counter = amountWrapper.querySelector('[data-counter]');
         counter.innerText = ++counter.innerText;
-        total(neededDiv, total_item, grand_total)
+        total(neededDiv, total_item, grand_total_value)
     }
 
     if (action === 'removeOrderItem') {
@@ -81,10 +85,10 @@ function updateFrontEnd(productId, quantity, total_item, grand_total, neededDiv,
     }
 }
 
-function total(neededDiv, total_item, grand_total) {
+function total(neededDiv, total_item, grand_total_value) {
         const cardWrapper = neededDiv.closest('.cart');
         const amountWrapper = cardWrapper.querySelector('[data-item_total]');
         const totalWrapper = document.querySelector('[data-grand_total]')
         amountWrapper.innerText = total_item + "грн";
-        totalWrapper.innerText = grand_total + "грн";
+        totalWrapper.innerText = grand_total_value + "грн";
 }

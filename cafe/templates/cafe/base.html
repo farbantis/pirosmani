@@ -13,6 +13,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'cafe/css/main.css' %}">
     {% block jstop %}
     {% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 </head>
 <body>
 
@@ -60,7 +62,8 @@
       <div class="h_basket">
         <a href="{% url 'cafe:cart' %}">
             <img class="h_img" src="{% static 'cafe/images/details/shopping-cart.svg' %}"/>
-                <span id="cart_indicator" class="cart_indicator"></span>
+                <span id="cart_indicator" class="cart_indicator">{{ order_quantity }}</span>
+                <div class="order_total_figure">{{ order_value }}</div>
         </a>
       </div>
     </div>
@@ -128,6 +131,7 @@
 
 
 {% block jscode %}
+
 {% endblock %}
 
 </body>

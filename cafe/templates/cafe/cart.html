@@ -15,7 +15,6 @@
                 const cookies = document.cookie.split(';');
                 for (let i = 0; i < cookies.length; i++) {
                     const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
                     if (cookie.substring(0, name.length + 1) === (name + '=')) {
                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                         break;
@@ -36,75 +35,78 @@
                 <div class="title_cart">
                     Корзина
                 </div>
-                {% if request.user.is_authenticated %}
-                    {% if cart_content %}
-                        {% for item in cart_content %}
-                            <div class="cart idd{{ item.product_id }}">
-                                <div data-cart_cancel="{{ item.product.id }}" class="cart_cancel">
-                                    <img class="cart_cancel_img"
-                                         src="{% static 'cafe/images/details/cart_cancel.svg' %}">
-                                </div>
-                                <div class="cart_picture">
-                                    <img src="{{ item.product.picture.url }}">
-                                </div>
-                                <div class="cart_item">{{ item.product }}</div>
-                                <div class="cart_item_cost">
-                                    {{ item.product.price }}x
-                                </div>
-                                <div class="cart_quantity">
-                                    <div data-product="{{ item.product.id }}" data-action="remove"
-                                         class="card_quantity_arrow update-cart">-
-                                    </div>
-                                    <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
-                                    <div data-product="{{ item.product.id }}" data-action="add"
-                                         class="card_quantity_arrow update-cart">+
-                                    </div>
-                                </div>
-                                <div data-item_total class="cart_price">{{ item.get_items_cost }} грн</div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <div>Ваша корзина пуста</div>
-                    {% endif %}
 
+                {#                            {% if request.user.is_authenticated %}#}
+                {% if cart_content %}
+                    {% for item in cart_content %}
+                        <div class="cart idd{{ item.product_id }}">
+                            <div data-cart_cancel="{{ item.product.id }}" class="cart_cancel">
+                                <img class="cart_cancel_img"
+                                     src="{% static 'cafe/images/details/cart_cancel.svg' %}" alt="cart_cancel">
+                            </div>
+                            <div class="cart_picture">
+                                <img src="{{ item.product.picture.url }}" alt="product_picture">
+                            </div>
+                            <div class="cart_item">{{ item.product }}</div>
+                            <div class="cart_item_cost">
+                                {{ item.product.price }}x
+                            </div>
+                            <div class="cart_quantity">
+                                <div data-product="{{ item.product.id }}" data-action="remove"
+                                     class="card_quantity_arrow update-cart">-
+                                </div>
+                                <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
+                                <div data-product="{{ item.product.id }}" data-action="add"
+                                     class="card_quantity_arrow update-cart">+
+                                </div>
+                            </div>
+                            <div data-item_total class="cart_price">{{ item.get_items_cost }} грн</div>
+                        </div>
+                    {% endfor %}
                 {% else %}
-
-
-                    {% if cart_content %}
-                        {% for item in product %}
-                            <div class="cart idd{{ item.id }}">
-                                <div data-cart_cancel="{{ item.id }}" class="cart_cancel">
-                                    <img class="cart_cancel_img"
-                                         src="{% static 'cafe/images/details/cart_cancel.svg' %}">
-                                </div>
-                                <div class="cart_picture">
-                                    <img src="{{ item.picture.url }}">
-                                </div>
-                                <div class="cart_item">{{ item.name }}</div>
-                                <div class="cart_item_cost">
-                                    {{ item.price }}x
-                                </div>
-                                <div class="cart_quantity">
-                                    <div data-product="{{ item.id }}" data-action="remove"
-                                         class="card_quantity_arrow update-cart">-
-                                    </div>
-                                    <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
-                                    <div data-product="{{ item.id }}" data-action="add"
-                                         class="card_quantity_arrow update-cart">+
-                                    </div>
-                                </div>
-                                <div data-item_total class="cart_price">{{ item.total }} грн</div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <div>Ваша корзина пуста</div>
-                    {% endif %}
-
-
+                    <div>Ваша корзина пуста</div>
                 {% endif %}
 
 
-
+                {##}
+                {#                {% else %}#}
+                {##}
+                {##}
+                {#                    {% if cart_content %}#}
+                {#                        {% for item in product %}#}
+                {#                            <div class="cart idd{{ item.id }}">#}
+                {#                                <div data-cart_cancel="{{ item.id }}" class="cart_cancel">#}
+                {#                                    <img class="cart_cancel_img"#}
+                {#                                         src="{% static 'cafe/images/details/cart_cancel.svg' %}">#}
+                {#                                </div>#}
+                {#                                <div class="cart_picture">#}
+                {#                                    <img src="{{ item.picture.url }}">#}
+                {#                                </div>#}
+                {#                                <div class="cart_item">{{ item.name }}</div>#}
+                {#                                <div class="cart_item_cost">#}
+                {#                                    {{ item.price }}x#}
+                {#                                </div>#}
+                {#                                <div class="cart_quantity">#}
+                {#                                    <div data-product="{{ item.id }}" data-action="remove"#}
+                {#                                         class="card_quantity_arrow update-cart">-#}
+                {#                                    </div>#}
+                {#                                    <div data-counter class="card_quantity_data">{{ item.quantity }}</div>#}
+                {#                                    <div data-product="{{ item.id }}" data-action="add"#}
+                {#                                         class="card_quantity_arrow update-cart">+#}
+                {#                                    </div>#}
+                {#                                </div>#}
+                {#                                <div data-item_total class="cart_price">{{ item.total }} грн</div>#}
+                {#                            </div>#}
+                {#                        {% endfor %}#}
+                {#                    {% else %}#}
+                {#                        <div>Ваша корзина пуста</div>#}
+                {#                    {% endif %}#}
+                {##}
+                {##}
+                {#                {% endif %}#}
+                {##}
+                {##}
+                {##}
                 <div class="delivery"></div>
             </div>
             {% if cart_content %}
@@ -135,7 +137,7 @@
                                 <div class="order_total_figure">{{ order.get_order_cost }} грн</div>
                             </div>
                             <button id="place_order_btn" class="order_btn"
-                            {% if request.user.is_authenticated %}{% else %}disabled{% endif %}
+                                    {% if request.user.is_authenticated %}{% else %}disabled{% endif %}
                             >
                                 {% if request.user.is_authenticated %}Оформить заказ {% else %} You need to
                                     login {% endif %}</button>
@@ -151,23 +153,26 @@
                     </div>
                 </div>
             {% endif %}
+
+
         </div>
     </div>
-        <script>
-            document.getElementById("place_order_btn").addEventListener("click", function () {
-                window.location.href = "{% url 'cafe:order_checkout' %}";
-            });
-        </script>
+    {#    <script>#}
+    {#        document.getElementById("place_order_btn").addEventListener("click", function () {#}
+    {#            window.location.href = "{% url 'cafe:order_checkout' %}";#}
+    {#        });#}
+    {#    </script>#}
 
-    <script>
-        console.log('in action', {{ pcs_ordered }})
-        const cart_indicator = document.getElementsByClassName('cart_indicator')[0]
-        cart_indicator.innerText =
-        {{ pcs_ordered }}
-        {#updateCartPicture({{ pcs_ordered }})#}
-    </script>
+    {#    <script>#}
+    {#        console.log('in action', {{ pcs_ordered }})#}
+    {#        const cart_indicator = document.getElementsByClassName('cart_indicator')[0]#}
+    {#        cart_indicator.innerText =#}
+    {#        {{ pcs_ordered }}#}
+    {#updateCartPicture({{ pcs_ordered }})#}
+    {#    </script>#}
 {% endblock %}
 
 {% block jscode %}
+
     <script src="{% static 'cafe/js/main.js' %}"></script>
 {% endblock %}
