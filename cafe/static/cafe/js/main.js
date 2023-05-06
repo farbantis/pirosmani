@@ -1,5 +1,7 @@
 const addToCartBtn = document.getElementsByClassName('update-cart');
 const cancelOrderItemBtn = document.getElementsByClassName('cart_cancel');
+// const addToCartBtn = document.querySelectorAll('update-cart');
+// const cancelOrderItemBtn = document.querySelectorAll('cart_cancel');
 
 for (let i=0; i < cancelOrderItemBtn.length; i++) {
     cancelOrderItemBtn[i].addEventListener('click', function () {
@@ -39,7 +41,7 @@ function updateCart(productId, action, neededDiv) {
              const grand_total_value = data.grand_total;
              const total_pcs_ordered = data.pcs_ordered;
              console.log('there response', quantity, total, grand_total_value)
-             console.log('pcs ordered ', total_pcs_ordered)
+             console.log('pcs ordered ')
              updateCartPicture(total_pcs_ordered, grand_total_value)
              updateFrontEnd(productId, quantity, total, grand_total_value, neededDiv, action)
   });
@@ -81,7 +83,7 @@ function updateFrontEnd(productId, quantity, total_item, grand_total_value, need
     if (action === 'removeOrderItem') {
         const toRemoveDiv = neededDiv.closest('.cart')
         toRemoveDiv.remove()
-
+        location.reload()
     }
 }
 

@@ -36,7 +36,7 @@
                     Корзина
                 </div>
 
-                {#                            {% if request.user.is_authenticated %}#}
+                                            {% if request.user.is_authenticated %}
                 {% if cart_content %}
                     {% for item in cart_content %}
                         <div class="cart idd{{ item.product_id }}">
@@ -68,11 +68,9 @@
                 {% endif %}
 
 
-                {##}
-                {#                {% else %}#}
-                {##}
-                {##}
-                {#                    {% if cart_content %}#}
+
+                                {% else %}
+                                    {% if cart_content %}
                 {#                        {% for item in product %}#}
                 {#                            <div class="cart idd{{ item.id }}">#}
                 {#                                <div data-cart_cancel="{{ item.id }}" class="cart_cancel">#}
@@ -98,15 +96,15 @@
                 {#                                <div data-item_total class="cart_price">{{ item.total }} грн</div>#}
                 {#                            </div>#}
                 {#                        {% endfor %}#}
-                {#                    {% else %}#}
-                {#                        <div>Ваша корзина пуста</div>#}
-                {#                    {% endif %}#}
-                {##}
-                {##}
-                {#                {% endif %}#}
-                {##}
-                {##}
-                {##}
+                                    {% else %}
+                                        <div>Ваша корзина пуста</div>
+                                    {% endif %}
+
+
+                                            {% endif %}
+
+
+
                 <div class="delivery"></div>
             </div>
             {% if cart_content %}

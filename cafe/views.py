@@ -45,10 +45,12 @@ class CartView(ListView):
             customer = self.request.user
             order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
             cart_content = order.orderitems_set.filter(quantity__gt=0)
+            print(f'!! cart_content {cart_content}')
         else:
             cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
+            print(f'cookie cart is {cart_content}')
             if cart_content:
-                cart_content = {int(key): value for key, value in cart_content.items()}
+                cart_content = {int(key): (int(value[0]), float(value[1])) for key, value in cart_content.items()}
                 products = Product.objects.filter(id__in=cart_content.keys())
                 for product in products:
                     product.quantity = cart_content[product.id]['quantity']
@@ -62,7 +64,6 @@ class CartView(ListView):
             contex_data['order_value'] = existing_order.get_order_cost or 0
             contex_data['order_quantity'] = existing_order.get_oder_quantity or 0
         return contex_data
-
 
     def post(self, request, *args, **kwargs):
         cart = Cart(request)
@@ -78,10 +79,16 @@ class CartView(ListView):
             cart_info = cart.delete_item(product_id)
         else:
             raise ValueError('unknown command')
-        return JsonResponse(cart_info)
+        response = JsonResponse(cart_info[0], safe=False)
+        if request.user.is_anonymous:
+            response.set_cookie('cart', json.dumps(cart_info[1]))
+        return response  # JsonResponse(cart_info[0])
 
 
 class Cart:
+    """
+    if user is authenticated we keep cart in database alternatively we keep it in cookies
+    """
 
     def __init__(self, request):
         self.total_value = 0
@@ -93,7 +100,7 @@ class Cart:
             self.cart_content = self.order.orderitems_set.filter(quantity__gt=0)
         else:
             self.cart = json.loads(request.COOKIES.get('cart', '{}'))
-            self.cart = {int(key): value for key, value in self.cart.items()}
+            self.cart = {int(key): int(value) for key, value in self.cart.items()}
 
     def add_item(self, product_id):
         product = Product.objects.get(id=product_id)
@@ -105,17 +112,33 @@ class Cart:
             if not created:
                 item_to_add.quantity += 1
                 item_to_add.save()
-        print(f'self.order is {self.order}')
-        pcs_ordered = self.order.get_oder_quantity
+            quantity = item_to_add.quantity
+            total_item = float(item_to_add.get_items_cost)
+            pcs_ordered = self.order.get_oder_quantity
+            grand_total = self.order.get_order_cost
+
+        else:
+            print(f'our cart is {self.cart}')
+            print(f'productId {product_id}')
+            self.cart[product_id] = (self.cart.get(product_id, 0) + 1, float(product.price))
+            quantity = float(self.cart[product_id][0] * self.cart[product_id][1])
+            print(f'now our cart is {self.cart}')
+            total_item = self.cart.get(product_id)[0]
+            print(f'total items {total_item}')
+            pcs_ordered = sum([piece[0] for piece in self.cart.values()])
+            print(f'pcs ordered is {pcs_ordered}')
+            grand_total = sum([quantity * price for quantity, price in self.cart.values()])
+            print(f'grand total is {grand_total}')
+
         cart_info = {
-            'quantity': item_to_add.quantity,
-            'total_item': float(item_to_add.get_items_cost),
-            'productId': item_to_add.product.id,
+            'quantity': quantity,
+            'total_item': total_item,
+            'productId': product_id,
             'pcs_ordered': pcs_ordered,
-            'grand_total': self.order.get_order_cost
+            'grand_total': grand_total
         }
         print(f'response is {cart_info}')
-        return cart_info
+        return cart_info, self.cart
 
     def remove_item(self, product_id):
         print('substracting....')
@@ -127,7 +150,7 @@ class Cart:
             if item_to_remove.quantity <= 0:
                 item_to_remove.delete()
         pcs_ordered = self.order.get_oder_quantity
-        #pcs_ordered = OrderItems.objects.filter(order=self.order).count()
+        # pcs_ordered = OrderItems.objects.filter(order=self.order).count()
 
         # self.cart[product_id]['quantity'] = self.cart[product_id].get('quantity', 0) - 1
         # if self.cart[product_id]['quantity'] <= 0:
@@ -151,9 +174,6 @@ class Cart:
         if self.request.user.is_authenticated:
             item_to_delete = OrderItems.objects.get(order=self.order, product=product)
             item_to_delete.delete()
-        # if product_id in self.cart:
-        #     del self.cart[product_id]
-        #     self.save()
         pcs_ordered = self.order.get_oder_quantity
         grand_total = self.order.get_order_cost
         cart_info = {
@@ -165,11 +185,11 @@ class Cart:
         }
         return cart_info
 
-
     # def save(self):
     #     response = JsonResponse()
     #     response.set_cookie('cart', json.dumps(self.cart))
     #     return response
+
 
 def cart(request):
     """handles cart details"""
@@ -194,7 +214,7 @@ def cart(request):
         'cart_content': cart_content,
         'order': order,
         'pcs_ordered': len(cart_content)
-        }
+    }
     if total_value:
         context.update({'total_value': total_value, 'product': products})
     return render(request, 'cafe/cart.html', context)
