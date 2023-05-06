@@ -1,13 +1,14 @@
 import json
 from decimal import Decimal
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
+from .mixins import ContextMixin
 from .models import Product, Order, OrderItems
 
 
-class Index(ListView):
+class Index(ContextMixin, ListView):
     """shows the index page with dishes"""
     template_name = 'cafe/index.html'
     context_object_name = 'offer'
@@ -20,13 +21,17 @@ class Index(ListView):
             queryset = Product.objects.all()
         return queryset
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        contex_data = super(Index, self).get_context_data()
-        if self.request.user.is_authenticated:
-            existing_order = Order.objects.get(customer=self.request.user)
-            contex_data['order_value'] = existing_order.get_order_cost or 0
-            contex_data['order_quantity'] = existing_order.get_oder_quantity or 0
-        return contex_data
+    # def get_context_data(self, *, object_list=None, **kwargs):
+    #     contex_data = super(Index, self).get_context_data()
+    #     if self.request.user.is_authenticated:
+    #         existing_order = Order.objects.get(customer=self.request.user)
+    #         contex_data['order_value'] = existing_order.get_order_cost or 0
+    #         contex_data['order_quantity'] = existing_order.get_oder_quantity or 0
+    #     else:
+    #         cart = json.loads(self.request.COOKIES.get('cart', '{}'))
+    #         contex_data['order_value'] = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart.items()])
+    #         contex_data['order_quantity'] = sum([pcs for pcs in cart.values()])
+    #     return contex_data
 
 
 class ProductDetailView(DetailView):
@@ -36,7 +41,7 @@ class ProductDetailView(DetailView):
     template_name = 'cafe/product_detail.html'
 
 
-class CartView(ListView):
+class CartView(ContextMixin, ListView):
     template_name = 'cafe/cart.html'
     context_object_name = 'cart_content'
 
@@ -48,33 +53,40 @@ class CartView(ListView):
             print(f'!! cart_content {cart_content}')
         else:
             cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
-            print(f'cookie cart is {cart_content}')
             if cart_content:
-                cart_content = {int(key): (int(value[0]), float(value[1])) for key, value in cart_content.items()}
-                products = Product.objects.filter(id__in=cart_content.keys())
-                for product in products:
-                    product.quantity = cart_content[product.id]['quantity']
-                    product.total = float(cart_content[product.id]['quantity'] * product.price)
+                cart_content = [
+                    {
+                        'id': int(key),
+                        'name': Product.objects.get(id=key).name,
+                        'picture': Product.objects.get(id=key).picture,
+                        'quantity': value,
+                        'price': Product.objects.get(id=key).price
+                    } for key, value in cart_content.items()]
+            else:
+                cart_content = []
         return cart_content
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        contex_data = super(CartView, self).get_context_data()
-        if self.request.user.is_authenticated:
-            existing_order = Order.objects.get(customer=self.request.user)
-            contex_data['order_value'] = existing_order.get_order_cost or 0
-            contex_data['order_quantity'] = existing_order.get_oder_quantity or 0
-        return contex_data
+    # def get_context_data(self, *, object_list=None, **kwargs):
+    #     contex_data = super(CartView, self).get_context_data()
+    #     if self.request.user.is_authenticated:
+    #         existing_order = Order.objects.get(customer=self.request.user)
+    #         contex_data['order_value'] = existing_order.get_order_cost or 0
+    #         contex_data['order_quantity'] = existing_order.get_oder_quantity or 0
+    #     else:
+    #         cart = json.loads(self.request.COOKIES.get('cart', '{}'))
+    #         contex_data['order_value'] = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart.items()])
+    #         contex_data['order_quantity'] = sum([pcs for pcs in cart.values()])
+    #     return contex_data
 
     def post(self, request, *args, **kwargs):
         cart = Cart(request)
         data = json.loads(request.body)
         product_id = data['productId']
         action = data['action']
-        print(f'action is {action}')
         if action == 'add':
             cart_info = cart.add_item(product_id)
         elif action == 'remove':
-            cart_info = cart.remove_item(product_id)
+            cart_info = cart.subtract_item(product_id)
         elif action == 'removeOrderItem':
             cart_info = cart.delete_item(product_id)
         else:
@@ -100,7 +112,6 @@ class Cart:
             self.cart_content = self.order.orderitems_set.filter(quantity__gt=0)
         else:
             self.cart = json.loads(request.COOKIES.get('cart', '{}'))
-            self.cart = {int(key): int(value) for key, value in self.cart.items()}
 
     def add_item(self, product_id):
         product = Product.objects.get(id=product_id)
@@ -118,17 +129,11 @@ class Cart:
             grand_total = self.order.get_order_cost
 
         else:
-            print(f'our cart is {self.cart}')
-            print(f'productId {product_id}')
-            self.cart[product_id] = (self.cart.get(product_id, 0) + 1, float(product.price))
-            quantity = float(self.cart[product_id][0] * self.cart[product_id][1])
-            print(f'now our cart is {self.cart}')
-            total_item = self.cart.get(product_id)[0]
-            print(f'total items {total_item}')
-            pcs_ordered = sum([piece[0] for piece in self.cart.values()])
-            print(f'pcs ordered is {pcs_ordered}')
-            grand_total = sum([quantity * price for quantity, price in self.cart.values()])
-            print(f'grand total is {grand_total}')
+            self.cart[product_id] = self.cart.get(product_id, 0) + 1
+            quantity = self.cart[product_id]
+            total_item = quantity * product.price
+            pcs_ordered = sum([pcs for pcs in self.cart.values()])
+            grand_total = sum([Product.objects.get(id=article).price * quantity for article, quantity in self.cart.items()])
 
         cart_info = {
             'quantity': quantity,
@@ -137,11 +142,9 @@ class Cart:
             'pcs_ordered': pcs_ordered,
             'grand_total': grand_total
         }
-        print(f'response is {cart_info}')
         return cart_info, self.cart
 
-    def remove_item(self, product_id):
-        print('substracting....')
+    def subtract_item(self, product_id):
         product = Product.objects.get(id=product_id)
         if self.request.user.is_authenticated:
             item_to_remove = OrderItems.objects.get(order=self.order, product=product)
@@ -149,33 +152,41 @@ class Cart:
             item_to_remove.save()
             if item_to_remove.quantity <= 0:
                 item_to_remove.delete()
-        pcs_ordered = self.order.get_oder_quantity
-        # pcs_ordered = OrderItems.objects.filter(order=self.order).count()
+            quantity = item_to_remove.quantity
+            total_item = float(item_to_remove.get_items_cost)
+            pcs_ordered = self.order.get_oder_quantity
+            grand_total = self.order.get_order_cost
+        else:
+            self.cart[product_id] = self.cart.get(product_id) - 1
+            if self.cart[product_id] <= 0:
+                del self.cart[product_id]
+            quantity = self.cart.get(product_id, 0)
+            total_item = quantity * product.price or 0
+            pcs_ordered = sum([pcs for pcs in self.cart.values()])
+            grand_total = sum([Product.objects.get(id=article).price * quantity for article, quantity in self.cart.items()])
 
-        # self.cart[product_id]['quantity'] = self.cart[product_id].get('quantity', 0) - 1
-        # if self.cart[product_id]['quantity'] <= 0:
-        #     self.cart[product_id]['quantity'] = 0
-        #     del self.cart[product_id]
-        # else:
-        #     self.cart[product_id]['total_item'] = float(Product.objects.get(id=product_id).price * self.cart[product_id]['quantity'])
-        # self.save()
         cart_info = {
-            'quantity': item_to_remove.quantity,
-            'total_item': float(item_to_remove.get_items_cost),
-            'productId': item_to_remove.product.id,
+            'quantity': quantity or 0,
+            'total_item': total_item or 0,
+            'productId': product_id,
             'pcs_ordered': pcs_ordered,
-            'grand_total': self.order.get_order_cost
+            'grand_total': grand_total
         }
-        print(f'response is {cart_info}')
-        return cart_info
+        return cart_info, self.cart
 
     def delete_item(self, product_id):
         product = Product.objects.get(id=product_id)
         if self.request.user.is_authenticated:
             item_to_delete = OrderItems.objects.get(order=self.order, product=product)
             item_to_delete.delete()
-        pcs_ordered = self.order.get_oder_quantity
-        grand_total = self.order.get_order_cost
+            pcs_ordered = self.order.get_oder_quantity
+            grand_total = self.order.get_order_cost
+        else:
+            del self.cart[product_id]
+            pcs_ordered = sum([pcs for pcs in self.cart.values()])
+            grand_total = sum(
+                [Product.objects.get(id=article).price * quantity for article, quantity in self.cart.items()])
+
         cart_info = {
             'quantity': 0,
             'total_item': 0,
@@ -183,105 +194,7 @@ class Cart:
             'pcs_ordered': pcs_ordered,
             'grand_total': grand_total
         }
-        return cart_info
-
-    # def save(self):
-    #     response = JsonResponse()
-    #     response.set_cookie('cart', json.dumps(self.cart))
-    #     return response
-
-
-def cart(request):
-    """handles cart details"""
-    total_value = 0
-    if request.user.is_authenticated:
-        customer = request.user
-        order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
-        cart_content = order.orderitems_set.filter(quantity__gt=0)
-        products = ''
-    else:
-        cart_content = json.loads(request.COOKIES.get('cart', '[]'))
-        if cart_content:
-            cart_content = {int(key): value for key, value in cart_content.items()}
-            products = Product.objects.filter(id__in=cart_content.keys())
-            for product in products:
-                product.quantity = cart_content[product.id]['quantity']
-                product.total = float(cart_content[product.id]['quantity'] * product.price)
-                total_value += product.total
-        order = {}
-
-    context = {
-        'cart_content': cart_content,
-        'order': order,
-        'pcs_ordered': len(cart_content)
-    }
-    if total_value:
-        context.update({'total_value': total_value, 'product': products})
-    return render(request, 'cafe/cart.html', context)
-
-
-def update_cart(request):
-    """handles all CRUD on cart - JS"""
-    data = json.loads(request.body)
-    productId = int(data['productId'])
-    action = data['action']
-    product = Product.objects.get(id=productId)
-
-    if request.user.is_authenticated:
-        # Get or create cart for logged in user
-        order, created = Order.objects.get_or_create(customer=request.user, is_completed=False)
-        order_item, created = OrderItems.objects.get_or_create(order=order, product=product)
-
-        if action == 'add':
-            order_item.quantity += 1
-            order_item.save()
-        elif action == 'remove':
-            order_item.quantity -= 1
-            if order_item.quantity <= 0:
-                order_item.delete()
-            else:
-                order_item.save()
-        elif action == 'removeOrderItem':
-            order_item.delete()
-
-        pcs_ordered = OrderItems.objects.filter(order=order).count()
-        information = {
-            'quantity': order_item.quantity,
-            'total_item': order_item.get_items_cost,
-            'productId': order_item.product.id,
-            'pcs_ordered': pcs_ordered
-        }
-        return JsonResponse(information, safe=False)
-    else:
-        # handle cart for anonymous user
-        cart = json.loads(request.COOKIES.get('cart', '{}'))
-        cart = {int(key): value for key, value in cart.items()}
-
-        if action == 'add':
-            if productId not in cart:
-                cart.update({productId: {
-                    'product': product.name,
-                }})
-            cart[productId]['quantity'] = cart[productId].get('quantity', 0) + 1
-            cart[productId]['total_item'] = float(product.price * cart[productId]['quantity'])
-        elif action == 'remove':
-            cart[productId]['quantity'] = cart[productId].get('quantity', 0) - 1
-            if cart[productId]['quantity'] <= 0:
-                cart[productId]['quantity'] = 0
-                del cart[productId]
-        elif action == 'removeOrderItem':
-            cart[productId]['quantity'] = 0
-            del cart[productId]
-        information = {
-            'quantity': cart[productId].get('quantity', 0) if cart.get(productId, 0) else 0,
-            'total_item': cart[productId].get('quantity', 0) * product.price if cart.get(productId, 0) else 0,
-            'productId': productId,
-            'pcs_ordered': len(cart)
-        }
-        response = JsonResponse(information)
-        # cart = {}
-        response.set_cookie('cart', json.dumps(cart))
-        return response
+        return cart_info, self.cart
 
 
 def delivery_terms(request):

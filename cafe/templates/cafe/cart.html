@@ -1,5 +1,6 @@
 {% extends 'cafe/base.html' %}
 {% load static %}
+{% load get_product_value %}
 
 {% block title %}
     Корзина
@@ -36,74 +37,68 @@
                     Корзина
                 </div>
 
-                                            {% if request.user.is_authenticated %}
-                {% if cart_content %}
-                    {% for item in cart_content %}
-                        <div class="cart idd{{ item.product_id }}">
-                            <div data-cart_cancel="{{ item.product.id }}" class="cart_cancel">
-                                <img class="cart_cancel_img"
-                                     src="{% static 'cafe/images/details/cart_cancel.svg' %}" alt="cart_cancel">
-                            </div>
-                            <div class="cart_picture">
-                                <img src="{{ item.product.picture.url }}" alt="product_picture">
-                            </div>
-                            <div class="cart_item">{{ item.product }}</div>
-                            <div class="cart_item_cost">
-                                {{ item.product.price }}x
-                            </div>
-                            <div class="cart_quantity">
-                                <div data-product="{{ item.product.id }}" data-action="remove"
-                                     class="card_quantity_arrow update-cart">-
+                {% if request.user.is_authenticated %}
+                    {% if cart_content %}
+                        {% for item in cart_content %}
+                            <div class="cart idd{{ item.product_id }}">
+                                <div data-cart_cancel="{{ item.product.id }}" class="cart_cancel">
+                                    <img class="cart_cancel_img"
+                                         src="{% static 'cafe/images/details/cart_cancel.svg' %}" alt="cart_cancel">
                                 </div>
-                                <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
-                                <div data-product="{{ item.product.id }}" data-action="add"
-                                     class="card_quantity_arrow update-cart">+
+                                <div class="cart_picture">
+                                    <img src="{{ item.product.picture.url }}" alt="product_picture">
                                 </div>
+                                <div class="cart_item">{{ item.product }}</div>
+                                <div class="cart_item_cost">
+                                    {{ item.product.price }}x
+                                </div>
+                                <div class="cart_quantity">
+                                    <div data-product="{{ item.product.id }}" data-action="remove"
+                                         class="card_quantity_arrow update-cart">-
+                                    </div>
+                                    <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
+                                    <div data-product="{{ item.product.id }}" data-action="add"
+                                         class="card_quantity_arrow update-cart">+
+                                    </div>
+                                </div>
+                                <div data-item_total class="cart_price">{{ item.get_items_cost }} грн</div>
                             </div>
-                            <div data-item_total class="cart_price">{{ item.get_items_cost }} грн</div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <div>Ваша корзина пуста</div>
+                    {% endif %}
+
                 {% else %}
-                    <div>Ваша корзина пуста</div>
+                    {% if cart_content %}
+                        {% for item in cart_content %}
+                            <div class="cart idd{{ item.id }}">
+                                <div data-cart_cancel="{{ item.id }}" class="cart_cancel">
+                                    <img class="cart_cancel_img"
+                                         src="{% static 'cafe/images/details/cart_cancel.svg' %}">
+                                </div>
+                                <div class="cart_picture">
+                                    <img src="{{ item.picture.url }}">
+                                </div>
+                                <div class="cart_item">{{ item.name }}</div>
+                                <div class="cart_item_cost">
+                                    {{ item.price }}x
+                                </div>
+                                <div class="cart_quantity">
+                                    <div data-product="{{ item.id }}" data-action="remove"
+                                         class="card_quantity_arrow update-cart">-
+                                    </div>
+                                    <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
+                                    <div data-product="{{ item.id }}" data-action="add"
+                                         class="card_quantity_arrow update-cart">+
+                                    </div>
+                                </div>
+                                <div data-item_total class="cart_price">{{ item.quantity|mult:item.price }}грн</div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div>Ваша корзина пуста</div>
+                    {% endif %}
                 {% endif %}
-
-
-
-                                {% else %}
-                                    {% if cart_content %}
-                {#                        {% for item in product %}#}
-                {#                            <div class="cart idd{{ item.id }}">#}
-                {#                                <div data-cart_cancel="{{ item.id }}" class="cart_cancel">#}
-                {#                                    <img class="cart_cancel_img"#}
-                {#                                         src="{% static 'cafe/images/details/cart_cancel.svg' %}">#}
-                {#                                </div>#}
-                {#                                <div class="cart_picture">#}
-                {#                                    <img src="{{ item.picture.url }}">#}
-                {#                                </div>#}
-                {#                                <div class="cart_item">{{ item.name }}</div>#}
-                {#                                <div class="cart_item_cost">#}
-                {#                                    {{ item.price }}x#}
-                {#                                </div>#}
-                {#                                <div class="cart_quantity">#}
-                {#                                    <div data-product="{{ item.id }}" data-action="remove"#}
-                {#                                         class="card_quantity_arrow update-cart">-#}
-                {#                                    </div>#}
-                {#                                    <div data-counter class="card_quantity_data">{{ item.quantity }}</div>#}
-                {#                                    <div data-product="{{ item.id }}" data-action="add"#}
-                {#                                         class="card_quantity_arrow update-cart">+#}
-                {#                                    </div>#}
-                {#                                </div>#}
-                {#                                <div data-item_total class="cart_price">{{ item.total }} грн</div>#}
-                {#                            </div>#}
-                {#                        {% endfor %}#}
-                                    {% else %}
-                                        <div>Ваша корзина пуста</div>
-                                    {% endif %}
-
-
-                                            {% endif %}
-
-
 
                 <div class="delivery"></div>
             </div>
