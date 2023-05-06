@@ -24,7 +24,6 @@ function updateScreen(productId, action) {
           .then((data) => {
              const pcs_ordered = data.pcs_ordered;
              const grand_total = data.grand_total;
-             console.log('index there response', pcs_ordered, grand_total)
              updateCartPicture(pcs_ordered, grand_total)
   });
 }

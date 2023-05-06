@@ -21,18 +21,6 @@ class Index(ContextMixin, ListView):
             queryset = Product.objects.all()
         return queryset
 
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     contex_data = super(Index, self).get_context_data()
-    #     if self.request.user.is_authenticated:
-    #         existing_order = Order.objects.get(customer=self.request.user)
-    #         contex_data['order_value'] = existing_order.get_order_cost or 0
-    #         contex_data['order_quantity'] = existing_order.get_oder_quantity or 0
-    #     else:
-    #         cart = json.loads(self.request.COOKIES.get('cart', '{}'))
-    #         contex_data['order_value'] = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart.items()])
-    #         contex_data['order_quantity'] = sum([pcs for pcs in cart.values()])
-    #     return contex_data
-
 
 class ProductDetailView(ContextMixin, DetailView):
     """shows detals for dish including comments calories and description"""

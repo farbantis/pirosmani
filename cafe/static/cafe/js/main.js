@@ -1,7 +1,7 @@
-const addToCartBtn = document.getElementsByClassName('update-cart');
-const cancelOrderItemBtn = document.getElementsByClassName('cart_cancel');
-// const addToCartBtn = document.querySelectorAll('update-cart');
-// const cancelOrderItemBtn = document.querySelectorAll('cart_cancel');
+// const addToCartBtn = document.getElementsByClassName('update-cart');
+// const cancelOrderItemBtn = document.getElementsByClassName('cart_cancel');
+const addToCartBtn = document.querySelectorAll('.update-cart');
+const cancelOrderItemBtn = document.querySelectorAll('.cart_cancel');
 
 for (let i=0; i < cancelOrderItemBtn.length; i++) {
     cancelOrderItemBtn[i].addEventListener('click', function () {
@@ -40,8 +40,8 @@ function updateCart(productId, action, neededDiv) {
              const total = data.total_item;
              const grand_total_value = data.grand_total;
              const total_pcs_ordered = data.pcs_ordered;
-             console.log('there response', quantity, total, grand_total_value)
-             console.log('pcs ordered ')
+             // console.log('there response', quantity, total, grand_total_value)
+             // console.log('pcs ordered ')
              updateCartPicture(total_pcs_ordered, grand_total_value)
              updateFrontEnd(productId, quantity, total, grand_total_value, neededDiv, action)
   });
