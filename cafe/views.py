@@ -34,7 +34,7 @@ class Index(ContextMixin, ListView):
     #     return contex_data
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(ContextMixin, DetailView):
     """shows detals for dish including comments calories and description"""
     model = Product
     context_object_name = 'product'
@@ -50,7 +50,7 @@ class CartView(ContextMixin, ListView):
             customer = self.request.user
             order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
             cart_content = order.orderitems_set.filter(quantity__gt=0)
-            print(f'!! cart_content {cart_content}')
+
         else:
             cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
             if cart_content:
@@ -65,18 +65,6 @@ class CartView(ContextMixin, ListView):
             else:
                 cart_content = []
         return cart_content
-
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     contex_data = super(CartView, self).get_context_data()
-    #     if self.request.user.is_authenticated:
-    #         existing_order = Order.objects.get(customer=self.request.user)
-    #         contex_data['order_value'] = existing_order.get_order_cost or 0
-    #         contex_data['order_quantity'] = existing_order.get_oder_quantity or 0
-    #     else:
-    #         cart = json.loads(self.request.COOKIES.get('cart', '{}'))
-    #         contex_data['order_value'] = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart.items()])
-    #         contex_data['order_quantity'] = sum([pcs for pcs in cart.values()])
-    #     return contex_data
 
     def post(self, request, *args, **kwargs):
         cart = Cart(request)
@@ -94,7 +82,7 @@ class CartView(ContextMixin, ListView):
         response = JsonResponse(cart_info[0], safe=False)
         if request.user.is_anonymous:
             response.set_cookie('cart', json.dumps(cart_info[1]))
-        return response  # JsonResponse(cart_info[0])
+        return response
 
 
 class Cart:
@@ -109,32 +97,29 @@ class Cart:
         if request.user.is_authenticated:
             self.customer = request.user
             self.order, self.created = Order.objects.get_or_create(customer=self.customer, is_completed=False)
-            self.cart_content = self.order.orderitems_set.filter(quantity__gt=0)
+            self.cart = self.order.orderitems_set.filter(quantity__gt=0)
         else:
             self.cart = json.loads(request.COOKIES.get('cart', '{}'))
 
-    def add_item(self, product_id):
-        product = Product.objects.get(id=product_id)
-        if self.request.user.is_authenticated:
-            item_to_add, created = OrderItems.objects.get_or_create(
-                order=self.order,
-                product=product,
-                defaults={'quantity': 1})
-            if not created:
-                item_to_add.quantity += 1
-                item_to_add.save()
-            quantity = item_to_add.quantity
-            total_item = float(item_to_add.get_items_cost)
-            pcs_ordered = self.order.get_oder_quantity
-            grand_total = self.order.get_order_cost
+    def get_cart_info_anonymous_user(self, cart, product_id=None):
+        product = Product.objects.get(id=product_id) if product_id else 0
+        quantity = cart.get(product_id, 0)
+        total_item = quantity * product.price if product else 0
+        pcs_ordered = sum([pcs for pcs in cart.values()])
+        grand_total = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart.items()])
+        cart_info = self.make_cart_info(quantity, total_item, product_id, pcs_ordered, grand_total)
+        return cart_info
 
-        else:
-            self.cart[product_id] = self.cart.get(product_id, 0) + 1
-            quantity = self.cart[product_id]
-            total_item = quantity * product.price
-            pcs_ordered = sum([pcs for pcs in self.cart.values()])
-            grand_total = sum([Product.objects.get(id=article).price * quantity for article, quantity in self.cart.items()])
+    def get_cart_info_registered_user(self, item=None, order=None, product_id=None):
+        quantity = item.quantity if item else 0
+        total_item = float(item.get_items_cost) if item else 0
+        pcs_ordered = self.order.get_oder_quantity
+        grand_total = self.order.get_order_cost
+        cart_info = self.make_cart_info(quantity, total_item, product_id, pcs_ordered, grand_total)
+        return cart_info
 
+    @staticmethod
+    def make_cart_info(quantity, total_item, product_id, pcs_ordered, grand_total):
         cart_info = {
             'quantity': quantity,
             'total_item': total_item,
@@ -142,58 +127,52 @@ class Cart:
             'pcs_ordered': pcs_ordered,
             'grand_total': grand_total
         }
+        return cart_info
+
+    def add_item(self, product_id):
+        product = Product.objects.get(id=product_id)
+        if self.request.user.is_authenticated:
+            item, created = OrderItems.objects.get_or_create(
+                order=self.order,
+                product=product,
+                defaults={'quantity': 1})
+            if not created:
+                item.quantity += 1
+                item.save()
+            cart_info = self.get_cart_info_registered_user(item, self.order, product_id)
+        else:
+            self.cart[product_id] = self.cart.get(product_id, 0) + 1
+            cart_info = self.get_cart_info_anonymous_user(self.cart, product_id)
+
         return cart_info, self.cart
 
     def subtract_item(self, product_id):
         product = Product.objects.get(id=product_id)
         if self.request.user.is_authenticated:
-            item_to_remove = OrderItems.objects.get(order=self.order, product=product)
-            item_to_remove.quantity -= 1
-            item_to_remove.save()
-            if item_to_remove.quantity <= 0:
-                item_to_remove.delete()
-            quantity = item_to_remove.quantity
-            total_item = float(item_to_remove.get_items_cost)
-            pcs_ordered = self.order.get_oder_quantity
-            grand_total = self.order.get_order_cost
+            item = OrderItems.objects.get(order=self.order, product=product)
+            item.quantity -= 1
+            item.save()
+            if item.quantity <= 0:
+                item.delete()
+            cart_info = self.get_cart_info_registered_user(item, self.order, product_id)
         else:
             self.cart[product_id] = self.cart.get(product_id) - 1
             if self.cart[product_id] <= 0:
                 del self.cart[product_id]
-            quantity = self.cart.get(product_id, 0)
-            total_item = quantity * product.price or 0
-            pcs_ordered = sum([pcs for pcs in self.cart.values()])
-            grand_total = sum([Product.objects.get(id=article).price * quantity for article, quantity in self.cart.items()])
+            cart_info = self.get_cart_info_anonymous_user(self.cart, product_id)
 
-        cart_info = {
-            'quantity': quantity or 0,
-            'total_item': total_item or 0,
-            'productId': product_id,
-            'pcs_ordered': pcs_ordered,
-            'grand_total': grand_total
-        }
         return cart_info, self.cart
 
     def delete_item(self, product_id):
         product = Product.objects.get(id=product_id)
         if self.request.user.is_authenticated:
-            item_to_delete = OrderItems.objects.get(order=self.order, product=product)
-            item_to_delete.delete()
-            pcs_ordered = self.order.get_oder_quantity
-            grand_total = self.order.get_order_cost
+            item = OrderItems.objects.get(order=self.order, product=product)
+            item.delete()
+            cart_info = self.get_cart_info_registered_user(order=self.order)
+
         else:
             del self.cart[product_id]
-            pcs_ordered = sum([pcs for pcs in self.cart.values()])
-            grand_total = sum(
-                [Product.objects.get(id=article).price * quantity for article, quantity in self.cart.items()])
-
-        cart_info = {
-            'quantity': 0,
-            'total_item': 0,
-            'productId': 0,
-            'pcs_ordered': pcs_ordered,
-            'grand_total': grand_total
-        }
+            cart_info = self.get_cart_info_anonymous_user(cart=self.cart)
         return cart_info, self.cart
 
 

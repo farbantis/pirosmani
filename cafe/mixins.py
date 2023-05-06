@@ -8,8 +8,10 @@ class ContextMixin:
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             existing_order = get_object_or_404(Order, customer=self.request.user)
-            context['order_value'] = existing_order.get_order_cost() or 0
-            context['order_quantity'] = existing_order.get_oder_quantity() or 0
+            print(f'existing order is {existing_order}')
+            context['order_value'] = existing_order.get_order_cost or 0
+            context['order_quantity'] = existing_order.get_oder_quantity or 0
+            print(f'order quantity-value is {context["order_value"]}-{context["order_quantity"]}')
         else:
             cart = json.loads(self.request.COOKIES.get('cart', '{}'))
             context['order_value'] = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart.items()])
