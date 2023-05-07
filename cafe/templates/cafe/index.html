@@ -62,10 +62,10 @@
                                 <img src="{% static 'cafe/images/details/star.svg' %}" alt="star">
                                 <img src="{% static 'cafe/images/details/star.svg' %}" alt="star">
                             </div>
-                            <div class="card-price-main">{{ item.price }} грн</div>
-                            <div class="card-price-weight">За {{ item.weight }}гр.</div>
+                            <div class="card-price-main">{{ item.price }} uah</div>
+                            <div class="card-price-weight">За {{ item.weight }}gr.</div>
                             <button data-product="{{ item.id }}" data-action="add" class="card-btn update-cart">
-                                В корзину
+                                To cart
                             </button>
                         </div>
                     {% endfor %}
