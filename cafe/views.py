@@ -54,6 +54,18 @@ class CartView(ContextMixin, ListView):
                 cart_content = []
         return cart_content
 
+    def get_context_data(self, **kwargs):
+        if self.request.user.is_authenticated:
+            customer = self.request.user
+            order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
+            total_value = order.get_order_cost
+        else:
+            cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
+            total_value = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart_content.items()])
+        context_data = super(CartView, self).get_context_data()
+        context_data['total_value'] = total_value
+        return context_data
+
     def post(self, request, *args, **kwargs):
         cart = Cart(request)
         data = json.loads(request.body)

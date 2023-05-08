@@ -34,9 +34,8 @@
         <div class="body_cart">
             <div class="left">
                 <div class="title_cart">
-                    Корзина
+                    Cart
                 </div>
-
                 {% if request.user.is_authenticated %}
                     {% if cart_content %}
                         {% for item in cart_content %}
@@ -65,7 +64,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        <div>Ваша корзина пуста</div>
+                        <div>Your cart is empty</div>
                     {% endif %}
 
                 {% else %}
@@ -73,11 +72,11 @@
                         {% for item in cart_content %}
                             <div class="cart idd{{ item.id }}">
                                 <div data-cart_cancel="{{ item.id }}" class="cart_cancel">
-                                    <img class="cart_cancel_img"
+                                    <img class="cart_cancel_img" alt="cart_cancel"
                                          src="{% static 'cafe/images/details/cart_cancel.svg' %}">
                                 </div>
                                 <div class="cart_picture">
-                                    <img src="{{ item.picture.url }}">
+                                    <img src="{{ item.picture.url }}" alt="item picture">
                                 </div>
                                 <div class="cart_item">{{ item.name }}</div>
                                 <div class="cart_item_cost">
@@ -96,58 +95,57 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        <div>Ваша корзина пуста</div>
+                        <div>Your cart is empty</div>
                     {% endif %}
                 {% endif %}
-
-                <div class="delivery"></div>
             </div>
-            {% if cart_content %}
-                <div class="right">
-                    <div class="oder">
-                        <div class="order_number">
-                            Заказ № {{ order.transaction_id }}
-                        </div>
-                        <div class="order_card">
-                            <div class="order_quantity">
-                                <div class="order_quantity_title">Товаров в корзине</div>
-                                <div data-grand_total class="order_quantity_figure">
-                                    {% if reques.user.is_authenticated %}
-                                        {{ order.get_order_cost }}
-                                    {% else %}
-                                        {{ total_value }}
-                                    {% endif %}
-                                    грн
+
+            <div class="delivery">
+                {% if cart_content %}
+                    <div class="right">
+                        <div class="oder">
+                            <div class="order_number">
+                                Order # {{ order.transaction_id }}
+                            </div>
+                            <div class="order_card">
+                                <div class="order_quantity">
+                                    <div class="order_quantity_title">Value of the goods</div>
+                                    <div data-grand_total class="order_quantity_figure">
+                                        {% if request.user.is_authenticated %}
+                                            {{ order.get_order_cost }}
+                                            {{ total_value }}
+                                        {% else %}
+                                            {{ total_value }}
+                                        {% endif %}
+                                        uah
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="order_promo">
-                                <div class="order_promo_title">Промокод</div>
-                                <div class="order_promo_figure"> 0 грн</div>
-                            </div>
+                                <div class="order_promo">
+                                    <div class="order_promo_title">Promo code</div>
+                                    <div class="order_promo_figure"> 0 uah</div>
+                                </div>
 
-                            <div class="order_total">
-                                <div class="order_total_title">Итого к оплате</div>
-                                <div class="order_total_figure">{{ order.get_order_cost }} грн</div>
+                                <div class="order_total">
+                                    <div class="order_total_title">Total</div>
+                                    <div class="order_total_figure">{{ order.get_order_cost }} uah</div>
+                                </div>
+                                <button id="place_order_btn" class="order_btn"
+                                        {% if request.user.is_authenticated %}{% else %}disabled{% endif %}
+                                >
+                                    {% if request.user.is_authenticated %}Оформить заказ {% else %} Login to proceed {% endif %}</button>
                             </div>
-                            <button id="place_order_btn" class="order_btn"
-                                    {% if request.user.is_authenticated %}{% else %}disabled{% endif %}
-                            >
-                                {% if request.user.is_authenticated %}Оформить заказ {% else %} You need to
-                                    login {% endif %}</button>
+                        </div>
+                        <div class="coupon">
+                            <div class="coupon_title"></div>
+                            <br>
+                            <div class="coupon_data">
+                                <input class="coupon_data_input" placeholder="  Enter Promo Code here"/>
+                                <button class="coupon_data_confirm">Apply</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="coupon">
-                        <div class="coupon_title"></div>
-                        <br>
-                        <div class="coupon_data">
-                            <input class="coupon_data_input" placeholder="Промокод"/>
-                            <button class="coupon_data_confirm">Подтвердить</button>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-
-
+                {% endif %}
+            </div>
         </div>
     </div>
     {#    <script>#}
