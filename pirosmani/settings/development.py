@@ -2,7 +2,6 @@ from pathlib import Path
 from .base import INSTALLED_APPS, MIDDLEWARE
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-
 DEBUG = True
 INSTALLED_APPS += ["debug_toolbar"]
 
