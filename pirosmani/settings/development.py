@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DEBUG = True
 INSTALLED_APPS += ["debug_toolbar"]
 
-# MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
 
 DATABASES = {
