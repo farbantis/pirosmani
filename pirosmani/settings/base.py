@@ -1,6 +1,7 @@
 import braintree
 import os
 from pathlib import Path
+from django.core.cache.backends.redis import RedisCache
 from dotenv import load_dotenv
 
 load_dotenv()
