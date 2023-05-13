@@ -18,7 +18,7 @@
                             uah
                         </div>
                     {% endfor %}
-                    <div class="checkout-total-value">total: { order.get_order_cost }} uah</div>
+                    <div class="checkout-total-value">total: {{ order.get_order_cost }} uah</div>
                     <button type="submit" class="checkout-btn order_btn">Proceed to payment</button>
                     <button type="submit" class="back-to-cart-btn order_btn">Back to cart</button>
                 </div>
@@ -70,7 +70,7 @@
 
             translations: {
                 payingWith: 'You are paying with {{paymentSource}}',
-                chooseAnotherWayToPay: 'My custom chooseAnotherWayToPay string',
+                {#chooseAnotherWayToPay: 'My custom chooseAnotherWayToPay string',#}
                 // Any other custom translation strings
             }
         }, function (createErr, instance) {

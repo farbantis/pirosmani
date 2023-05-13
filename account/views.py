@@ -1,3 +1,4 @@
+import json
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -6,8 +7,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
 from django.views.generic import CreateView, UpdateView
-from kombu.utils import json
-from cafe.models import Order, OrderItems
+from cafe.models import Order, OrderItems, Product
 from .forms import UserRegistrationForm, UserLoginForm, UserEditForm, CustomerAddEditForm
 from .models import Customer, User
 
@@ -53,31 +53,31 @@ class UserLoginView(LoginView):
     """logging user"""
     template_name = 'account/user_login.html'
     form_class = UserLoginForm
-    next_page = 'cafe:main_page'
 
-    def get_redirect_url(self):
-        """Return the user-originating redirect URL if it's safe."""
+    def get_success_url(self):
         if self.request.user.is_staff:
-            pass
+            return '/'
             # redirect_to = '/admin_panel/'
+        elif json.loads(self.request.COOKIES.get('cart', '[]')):
+            return reverse_lazy('cafe:cart')
         else:
             return '/'
 
     def form_valid(self, form):
         """if user has a cart as an anonymous user we move the cart to the database"""
         response = super().form_valid(form)
-        print(f'loging in......')
         if self.request.user.is_authenticated:
-            print(f'user is logged in')
             cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
             if cart_content:
-                print(f'there is a cart!!! {cart_content}')
-                existing_order = Order.objects.get(customer=self.request.user, is_completed=False)
+                existing_order = Order.objects.filter(customer=self.request.user, is_completed=False)
                 if existing_order:
                     existing_order.delete()
                 order = Order.objects.create(customer=self.request.user, is_completed=False)
-                for product in cart_content:
-                    OrderItems.objects.create(order=order, product=product.product, quantity=product.quantity)
+                for product_id, quantity in cart_content.items():
+                    OrderItems.objects.create(
+                        order=order,
+                        product=Product.objects.get(id=int(product_id)),
+                        quantity=int(quantity))
                 response.set_cookie('cart', {})
         return response
 

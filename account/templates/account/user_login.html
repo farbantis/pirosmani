@@ -9,7 +9,7 @@
                 <img class="login_picture_inner" src="{% static 'account/images/details/register/person.svg' %}" alt="img">
             </div>
             <div class="login_title">
-                Войти в личный кабинет
+                Login
             </div>
             <form method="post">
                 {% csrf_token %}
@@ -21,14 +21,14 @@
                     {{ form.password }}
                 </div>
                 <div class="login_forgot login_align">
-                    <a class="login_forgot_inner" href="#">Забыли пароль</a>
+                    <a class="login_forgot_inner" href="#">forgot password</a>
                 </div>
                 <div class="login_btn">
-                    <button class="login_btn_inner" type="submit">ВОЙТИ</button>
+                    <button class="login_btn_inner" type="submit">LOGIN</button>
                 </div>
             </form>
             <div class="login_register login_align">
-                Впервые у нас? &nbsp <a href="{% url 'account:register' %}" class="login_register_inner"> Зарегистрироваться</a>
+                First visit? &nbsp <a href="{% url 'account:register' %}" class="login_register_inner"> Register</a>
             </div>
         </div>
     </div>

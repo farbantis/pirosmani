@@ -40,27 +40,32 @@
                     {% if cart_content %}
                         {% for item in cart_content %}
                             <div class="cart idd{{ item.product_id }}">
-                                <div data-cart_cancel="{{ item.product.id }}" class="cart_cancel">
-                                    <img class="cart_cancel_img"
-                                         src="{% static 'cafe/images/details/cart_cancel.svg' %}" alt="cart_cancel">
-                                </div>
-                                <div class="cart_picture">
-                                    <img src="{{ item.product.picture.url }}" alt="product_picture">
-                                </div>
-                                <div class="cart_item">{{ item.product }}</div>
-                                <div class="cart_item_cost">
-                                    {{ item.product.price }}x
-                                </div>
-                                <div class="cart_quantity">
-                                    <div data-product="{{ item.product.id }}" data-action="remove"
-                                         class="card_quantity_arrow update-cart">-
+                                <div class="cart-group-one">
+                                    <div data-cart_cancel="{{ item.product.id }}" class="cart_cancel">
+                                        <img class="cart_cancel_img"
+                                             src="{% static 'cafe/images/details/cart_cancel.svg' %}" alt="cart_cancel">
                                     </div>
-                                    <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
-                                    <div data-product="{{ item.product.id }}" data-action="add"
-                                         class="card_quantity_arrow update-cart">+
+                                    <div class="cart_picture">
+                                        <img src="{{ item.product.picture.url }}" alt="product_picture">
                                     </div>
+                                    <div class="cart_item">{{ item.product }}</div>
                                 </div>
-                                <div data-item_total class="cart_price">{{ item.get_items_cost }} грн</div>
+                                <div class="cart-group-two">
+                                    <div class="cart_item_cost">
+                                        {{ item.product.price }}x
+                                    </div>
+                                    <div class="cart_quantity">
+                                        <div data-product="{{ item.product.id }}" data-action="remove"
+                                             class="card_quantity_arrow update-cart">-
+                                        </div>
+                                        <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
+                                        <div data-product="{{ item.product.id }}" data-action="add"
+                                             class="card_quantity_arrow update-cart">+
+                                        </div>
+                                    </div>
+                                    <div data-item_total class="cart_price">{{ item.get_items_cost }} грн</div>
+                                </div>
+
                             </div>
                         {% endfor %}
                     {% else %}
@@ -71,27 +76,31 @@
                     {% if cart_content %}
                         {% for item in cart_content %}
                             <div class="cart idd{{ item.id }}">
-                                <div data-cart_cancel="{{ item.id }}" class="cart_cancel">
-                                    <img class="cart_cancel_img" alt="cart_cancel"
-                                         src="{% static 'cafe/images/details/cart_cancel.svg' %}">
-                                </div>
-                                <div class="cart_picture">
-                                    <img src="{{ item.picture.url }}" alt="item picture">
-                                </div>
-                                <div class="cart_item">{{ item.name }}</div>
-                                <div class="cart_item_cost">
-                                    {{ item.price }}x
-                                </div>
-                                <div class="cart_quantity">
-                                    <div data-product="{{ item.id }}" data-action="remove"
-                                         class="card_quantity_arrow update-cart">-
+                                <div class="cart-group-one">
+                                    <div data-cart_cancel="{{ item.id }}" class="cart_cancel">
+                                        <img class="cart_cancel_img" alt="cart_cancel"
+                                             src="{% static 'cafe/images/details/cart_cancel.svg' %}">
                                     </div>
-                                    <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
-                                    <div data-product="{{ item.id }}" data-action="add"
-                                         class="card_quantity_arrow update-cart">+
+                                    <div class="cart_picture">
+                                        <img src="{{ item.picture.url }}" alt="item picture">
                                     </div>
+                                    <div class="cart_item">{{ item.name }}</div>
                                 </div>
-                                <div data-item_total class="cart_price">{{ item.quantity|mult:item.price }}грн</div>
+                                <div class="cart-group-two">
+                                    <div class="cart_item_cost">
+                                        {{ item.price }}x
+                                    </div>
+                                    <div class="cart_quantity">
+                                        <div data-product="{{ item.id }}" data-action="remove"
+                                             class="card_quantity_arrow update-cart">-
+                                        </div>
+                                        <div data-counter class="card_quantity_data">{{ item.quantity }}</div>
+                                        <div data-product="{{ item.id }}" data-action="add"
+                                             class="card_quantity_arrow update-cart">+
+                                        </div>
+                                    </div>
+                                    <div data-item_total class="cart_price">{{ item.quantity|mult:item.price }}грн</div>
+                                </div>
                             </div>
                         {% endfor %}
                     {% else %}
@@ -129,18 +138,15 @@
                                     <div class="order_total_title">Total</div>
                                     <div class="order_total_figure">{{ order.get_order_cost }} uah</div>
                                 </div>
-                                <button id="place_order_btn" class="order_btn"
-                                        {% if request.user.is_authenticated %}{% else %}disabled{% endif %}
-                                >
-                                    {% if request.user.is_authenticated %}Checkout {% else %} Login to proceed {% endif %}</button>
-                            </div>
-                        </div>
-                        <div class="coupon">
-                            <div class="coupon_title"></div>
-                            <br>
-                            <div class="coupon_data">
-                                <input class="coupon_data_input" placeholder="  Enter Promo Code here"/>
-                                <button class="coupon_data_confirm">Apply</button>
+                                <div class="coupon_data">
+                                    <input class="coupon_data_input" placeholder="  Enter Promo Code here"/>
+                                    <button class="coupon_data_confirm_btn btn">Apply</button>
+                                </div>
+                                {% if request.user.is_authenticated %}
+                                    <button id="place_order_btn" class="order_btn btn">Checkout</button>
+                                {% else %}
+                                    <button id="login_place_order_btn" class="order_btn btn">Login to proceed</button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -148,11 +154,16 @@
             </div>
         </div>
     </div>
-        <script>
-            document.getElementById("place_order_btn").addEventListener("click", function () {
-                window.location.href = "{% url 'cafe:checkout' %}";
-            });
-        </script>
+    <script>
+        document.getElementById("place_order_btn").addEventListener("click", function () {
+            window.location.href = "{% url 'cafe:checkout' %}";
+        });
+    </script>
+    <script>
+        document.getElementById("login_place_order_btn").addEventListener("click", function () {
+            window.location.href = "{% url 'account:login' %}";
+        });
+    </script>
 {% endblock %}
 
 {% block jscode %}

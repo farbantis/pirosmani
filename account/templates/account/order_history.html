@@ -11,15 +11,15 @@
             {% for user_order in user_orders %}
                 <div class="history_info">
                     <div class="history_order_card">
-                        <p>Номер заказа: <span class="order_cart_number">{{ user_order.transaction_id }}</span> </p>
-                        <p>Способ оплаты:</p>
-                        <p>Дата заказа: <span class="order_card_date">{{ user_order.date_ordered }}</span></p>
-                        <p>Дата доставки:</p>
-                        <p>Статус заказа: <span class="order_card_date">
+                        <p>Order #: <span class="order_cart_number">{{ user_order.transaction_id }}</span> </p>
+                        <p>Payment method:</p>
+                        <p>Order date: <span class="order_card_date">{{ user_order.date_ordered }}</span></p>
+                        <p>Delivery date:</p>
+                        <p>Order status: <span class="order_card_date">
                             {% if user_order.is_completed %}
-                                Завершен
+                                Completed
                             {% else %}
-                                Не завершен
+                                In progress
                             {% endif %} </span></p>
                     </div>
                     <div class="history_items">
@@ -41,7 +41,7 @@
                                 </div>
                             </div>
                         {% endfor %}
-                    <a href="{% url 'cafe:cart' %}"><div class="history_repeat">Повторить заказ</div></a>
+                    <a href="{% url 'cafe:cart' %}"><div class="history_repeat">Order again</div></a>
                     </div>
             </div>
                 {% endfor %}

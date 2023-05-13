@@ -1,15 +1,26 @@
 {% extends 'cafe/base.html' %}
 
 {% block title %}
-    Кабинет пользователя
+    Account
 {% endblock %}
 
 {% block main_content %}
     <div class="container">
-    <p><a href="{% url 'account:order_history' %}">История заказов</a></p>
-    <p><a href="{% url 'account:user_edit' user.id %}">Редактировать личные данные</a></p>
+    <ul>
+        <li>
+            <a href="{% url 'account:order_history' %}">Order history</a>
+        </li>
+        <li>
+            <a href="{% url 'account:user_edit' user.id %}">Change personal data</a>
+        </li>
+        <li>
+            <a href="{% url 'account:logout' %}">Log out</a>
+        </li>
+    </ul>
+{#    <p><a href="{% url 'account:order_history' %}">Order history</a></p>#}
+{#    <p><a href="{% url 'account:user_edit' user.id %}">Change personal data</a></p>#}
 {#    <p><a href="{% url 'account:password_change' %}">Изменить пароль</a></p>#}
-    <p><a href="{% url 'account:logout' %}">Выйти из системы</a></p>
+{#    <p><a href="{% url 'account:logout' %}">Log out</a></p>#}
     </div>
 
 {% endblock %}
