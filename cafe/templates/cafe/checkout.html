@@ -19,7 +19,7 @@
                         </div>
                     {% endfor %}
                     <div class="checkout-total-value">total: {{ order.get_order_cost }} uah</div>
-                    <button type="submit" class="checkout-btn order_btn">Proceed to payment</button>
+                    <button type="submit" class="checkout-btn order_btn btn">Proceed to payment</button>
                     <button type="submit" class="back-to-cart-btn order_btn">Back to cart</button>
                 </div>
             </div>
@@ -29,7 +29,7 @@
                     {% csrf_token %}
                     <input type="hidden" id="nonce" name="payment_method_nonce">
                     <input type="hidden" id="amount" name="amount" value={{ order.get_order_cost }}>
-                    <button type="submit" id="submit-button" class="order_btn">Pay</button>
+                    <button type="submit" id="submit-button" class="order_btn btn">Pay</button>
                 </form>
             </div>
         </div>

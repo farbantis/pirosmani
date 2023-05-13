@@ -6,9 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import DetailView, ListView
-
-from pirosmani.settings import gateway
-from .mixins import ContextMixin
+from .mixins import ContextMixin, CartActionsMixin
 from .models import Product, Order, OrderItems
 from .tasks import transaction_email_notification
 
@@ -34,7 +32,7 @@ class ProductDetailView(ContextMixin, DetailView):
     template_name = 'cafe/product_detail.html'
 
 
-class CartView(ContextMixin, ListView):
+class CartView(CartActionsMixin, ContextMixin, ListView):
     template_name = 'cafe/cart.html'
     context_object_name = 'cart_content'
 
@@ -45,7 +43,8 @@ class CartView(ContextMixin, ListView):
             cart_content = order.orderitems_set.filter(quantity__gt=0)
 
         else:
-            cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
+            #cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
+            cart_content = self.get_cookie_cart_content()
             if cart_content:
                 cart_content = [
                     {
@@ -65,7 +64,8 @@ class CartView(ContextMixin, ListView):
             order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
             total_value = order.get_order_cost
         else:
-            cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
+            #cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
+            cart_content = self.get_cookie_cart_content()
             total_value = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart_content.items()])
         context_data = super(CartView, self).get_context_data()
         context_data['total_value'] = total_value
@@ -90,7 +90,7 @@ class CartView(ContextMixin, ListView):
         return response
 
 
-class Cart:
+class Cart(CartActionsMixin):
     """
     if user is authenticated we keep cart in database alternatively we keep it in cookies
     """
@@ -104,7 +104,8 @@ class Cart:
             self.order, self.created = Order.objects.get_or_create(customer=self.customer, is_completed=False)
             self.cart = self.order.orderitems_set.filter(quantity__gt=0)
         else:
-            self.cart = json.loads(request.COOKIES.get('cart', '{}'))
+            #self.cart = json.loads(request.COOKIES.get('cart', '{}'))
+            self.cart = self.get_cookie_cart_content()
 
     def get_cart_info_anonymous_user(self, cart, product_id=None):
         product = Product.objects.get(id=product_id) if product_id else 0

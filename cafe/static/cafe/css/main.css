@@ -115,6 +115,7 @@ header{
   border-style: none;
   outline: none;
   color: inherit;
+  cursor: pointer;
 }
 
 .dropdown {
@@ -128,7 +129,7 @@ header{
   position: absolute;
   min-width: 158px;
   z-index: 1;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 13px;
   background: var(--color-cl-btn);
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.12);
@@ -137,7 +138,7 @@ header{
 
 .dropdown-content a {
   color: black;
-  padding: 8px 0 8px 26px;
+  padding: 8px 0 8px 20px;
   display: block;
 }
 
@@ -293,6 +294,7 @@ header{
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
+  margin-top: 5px;
   /*gap: 57px;*/
 }
 
@@ -307,6 +309,10 @@ header{
 
 .card-photo-img{
   width: 100%;
+}
+.card-photo-img:hover{
+  transform: scale(1.2);
+  transition: 0.2s;
 }
 
 .card-title{
@@ -365,8 +371,9 @@ header{
   line-height: 14px;
   color: var(--color-cl-btn);
   background: var(--color-background-btn);
-  border-radius: 5px;
-  padding: 10px 27px;
+  /*border-radius: 5px;*/
+  border-radius: 30px 0 30px 0;
+  padding: 10px 40px;
   margin: 5px auto;
   border: 1px solid transparent;
 }

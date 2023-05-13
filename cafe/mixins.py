@@ -15,3 +15,9 @@ class ContextMixin:
             context['order_value'] = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart.items()])
             context['order_quantity'] = sum([pcs for pcs in cart.values()])
         return context
+
+
+class CartActionsMixin:
+    def get_cookie_cart_content(self):
+        return json.loads(self.request.COOKIES.get('cart', '[]'))
+

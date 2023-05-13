@@ -8,6 +8,7 @@
 {% block jstop %}
     <script>
         let user = '{{ request.user }}'
+
         function getToken(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -23,6 +24,7 @@
             }
             return cookieValue;
         }
+
         const csrftoken = getToken('csrftoken');
     </script>
 {% endblock %}
@@ -45,9 +47,8 @@
                 <div class="main-cards-row">
                     {% for item in offer %}
                         <div class="card">
-                            <img class="card-photo-img" src="{{ item.picture.url }}" alt="card pic">
-
                             <a href="{% url 'cafe:product_detail' item.slug %}">
+                                <img class="card-photo-img" src="{{ item.picture.url }}" alt="card pic">
                                 <div class="card-title">
                                     {{ item.name }}
                                 </div>
@@ -73,8 +74,6 @@
             </div>
         </div>
     </div>
-    </div>
-    </div>
 {% endblock %}
 
 {% block paginator %}
@@ -90,6 +89,6 @@
 {% endblock %}
 
 {% block jscode %}
-            <script src="{% static 'cafe/js/index.js' %}"></script>
+    <script src="{% static 'cafe/js/index.js' %}"></script>
 {% endblock %}
 
