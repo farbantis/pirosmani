@@ -1,11 +1,12 @@
-*,
-*::before,
-*::after {
-	padding: 0;
-	margin: 0;
-	border: none;
-	box-sizing: border-box;
-}
+/**,*/
+/**::before,*/
+/**::after {*/
+/*	padding: 0;*/
+/*	margin: 0;*/
+/*	border: none;*/
+/*	box-sizing: border-box;*/
+/*}*/
+* {box-sizing: border-box}
 
 a, a:visited  {
     color: inherit;
@@ -167,6 +168,9 @@ header{
   background-color: transparent;
   font-family: inherit;
   font-size: inherit;
+  border-style: none;
+  outline: none;
+  color: inherit;
 }
 
 .dropdown {
@@ -226,7 +230,6 @@ header{
   width: 17px;
   height: 17px;
   vertical-align: middle;
-  margin-right: 10px;
   /*background-image: url('./img/phone.svg');*/
 }
 .h_login{
@@ -299,7 +302,7 @@ header{
   line-height: 30px;
   color: #FFFFFF;
   padding: 10px 30px;
-  margin-top: 42px;
+  /*margin-top: 42px;*/
   max-width: 217px;
   height: 53px;
   background: #00AC4E;
@@ -502,11 +505,13 @@ header{
 
 .footer{
   background-color: #00AC4E;
-  padding: 34px 0;
+  padding: 10px 0;
   color: #FFFFFF;
 }
 
-.footer-top{}
+.footer-top{
+  padding-left: 10px;
+}
 .footer-top-contact{}
 
 .ftc-phones{
@@ -524,24 +529,26 @@ header{
 .phone1{
   font-weight: 500;
   font-size: 19px;
-  line-height: 39px;
+  line-height: 25px;
 }
 
 .ftc-working{
   margin-top: 16px;
   font-weight: 400;
   font-size: 15px;
-  line-height: 32px;
+  line-height: 25px;
 }
 .ftc-email{
   margin-top: 10px;
   font-style: normal;
   font-weight: 400;
   font-size: 19px;
-  line-height: 32px;
+  line-height: 25px;
 }
 .footer-top-social{}
-.footer-bottom{}
+.footer-bottom{
+  padding-left: 10px;
+}
 
 .support{
   margin-top: 10px;
@@ -1132,6 +1139,20 @@ input:focus {
   color: #00AC4E;
 }
 
+/* checkout */
+.checkout-row{
+  /*display: flex;*/
+  max-width: 500px;
+  margin: 0 auto;
+}
+.payment {
+  display: none;
+  max-width: 600px;
+}
+
+.checkout-total-value {
+  font-weight: bold;
+}
 
 
 @media (max-width: 875px) {
@@ -1163,7 +1184,7 @@ input:focus {
 }
 
 @media (max-width:646px)   {
-  .promo {
+  .promo-img {
     display: none;
   }
   .disappear {

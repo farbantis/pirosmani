@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
 from django.views.generic import CreateView, UpdateView
+from kombu.utils import json
 from cafe.models import Order, OrderItems
 from .forms import UserRegistrationForm, UserLoginForm, UserEditForm, CustomerAddEditForm
 from .models import Customer, User
@@ -62,6 +63,24 @@ class UserLoginView(LoginView):
         else:
             return '/'
 
+    def form_valid(self, form):
+        """if user has a cart as an anonymous user we move the cart to the database"""
+        response = super().form_valid(form)
+        print(f'loging in......')
+        if self.request.user.is_authenticated:
+            print(f'user is logged in')
+            cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
+            if cart_content:
+                print(f'there is a cart!!! {cart_content}')
+                existing_order = Order.objects.get(customer=self.request.user, is_completed=False)
+                if existing_order:
+                    existing_order.delete()
+                order = Order.objects.create(customer=self.request.user, is_completed=False)
+                for product in cart_content:
+                    OrderItems.objects.create(order=order, product=product.product, quantity=product.quantity)
+                response.set_cookie('cart', {})
+        return response
+
 
 class UserLogoutView(LogoutView):
     """logout user"""
@@ -71,7 +90,7 @@ class UserLogoutView(LogoutView):
 class UserPasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChangeView):
     template_name = 'account/change_password.html'
     success_url = reverse_lazy('cafe:user_dashboard')
-    success_message = 'Пароль пользователя изменен'
+    success_message = 'Password has been successfully changed'
 
 
 class UserPasswordChangeDoneView(PasswordChangeDoneView):

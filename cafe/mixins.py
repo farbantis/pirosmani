@@ -7,7 +7,7 @@ class ContextMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            existing_order = get_object_or_404(Order, customer=self.request.user)
+            existing_order = get_object_or_404(Order, customer=self.request.user, is_completed=False)
             context['order_value'] = existing_order.get_order_cost or 0
             context['order_quantity'] = existing_order.get_oder_quantity or 0
         else:

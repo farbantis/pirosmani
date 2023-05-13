@@ -1,3 +1,4 @@
+import braintree
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -27,6 +28,7 @@ INSTALLED_APPS = [
     'bootstrap5',
     'rest_framework',
     'rest_framework.authtoken',
+    'braintree',
 
 ]
 
@@ -119,5 +121,32 @@ REST_FRAMEWORK = {
     ]
 }
 
-
 FORCE_KILL_TOKEN = 600000000000000
+
+BRAINTREE_MERCHANT_ID = os.getenv('BRAINTREE_MERCHANT_ID')
+BRAINTREE_PUBLIC_KEY = os.getenv('BRAINTREE_PUBLIC_KEY')
+BRAINTREE_PRIVATE_KEY = os.getenv('BRAINTREE_PRIVATE_KEY')
+
+gateway = braintree.BraintreeGateway(
+    braintree.Configuration(
+        braintree.Environment.Sandbox,
+        merchant_id=BRAINTREE_MERCHANT_ID,
+        public_key=BRAINTREE_PUBLIC_KEY,
+        private_key=BRAINTREE_PRIVATE_KEY
+    )
+)
+
+braintree.Configuration.configure(
+    braintree.Environment.Sandbox,
+    merchant_id=BRAINTREE_MERCHANT_ID,
+    public_key=BRAINTREE_PUBLIC_KEY,
+    private_key=BRAINTREE_PRIVATE_KEY,
+)
+
+BRAINTREE = {
+    'environment': 'sandbox',
+    'merchant_id': BRAINTREE_MERCHANT_ID,
+    'public_key': BRAINTREE_PUBLIC_KEY,
+    'private_key': BRAINTREE_PRIVATE_KEY,
+    'use_ssl': False,
+}

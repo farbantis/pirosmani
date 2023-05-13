@@ -48,29 +48,30 @@
                             </div>
                         </div>
                     </li>
-                    <li class="disappear"><a href="{% url 'cafe:delivery_terms' %}">Delivery</a></li>
+                    <li class="disappear"><a href="{% url 'cafe:delivery_terms' %}">Project Details</a></li>
                     <li class="disappear"><a href="#">Payment</a></li>
                     <li class="disappear"><a href="#">Booking</a></li>
                 </ul>
             </nav>
 
-            <div class="h_phone"><img src="{% static 'cafe/images/details/phone.svg' %}"> +88 888 888-88-88</div>
+            <div class="h_phone">
+                <img src="{% static 'cafe/images/details/phone.svg' %}" alt="phone"> +88 888 888-88-88</div>
             <div class="h_icons">
                 <div class="h_login">
                     {% if user.is_authenticated %}
                         <div class="h_login_inner">
-                            <a href="{% url 'account:user_dashboard' %}">кабинет</a>
+                            <a href="{% url 'account:user_dashboard' %}">account</a>
                         </div>
                     {% else %}
                         <a href="{% url 'account:login' %}">
-                            <img class="h_img start-btn" src="{% static 'cafe/images/details/person.svg' %}">
+                            <img class="h_img start-btn" src="{% static 'cafe/images/details/person.svg' %}" alt="person">
                         </a>
                     {% endif %}
                 </div>
 
             <div class="h_basket">
                 <a href="{% url 'cafe:cart' %}">
-                    <img class="h_img" src="{% static 'cafe/images/details/shopping-cart.svg' %}"/>
+                    <img class="h_img" src="{% static 'cafe/images/details/shopping-cart.svg' %}" alt="cart"/>
                     <span id="cart_indicator" class="cart_indicator">{% if order_quantity %}
                         {{ order_quantity }} {% endif %}</span>
                     <div class="order_total_figure">{% if order_value %} {{ order_value }} {% endif %} </div>
@@ -117,23 +118,23 @@
         <div class="footer-top">
             <div class="footer-top-contact">
                 <div class="ftc-phones">
-                    <div class="text1">Бесплатный звонок по УКР</div>
-                    <div class="text1">Для приема заказов</div>
+                    <div class="text1">call us</div>
+                    <div class="text1">for orders:</div>
                     <div class="phone1">+44 282-60-00</div>
                     <div class="phone1">+44 066-46-85</div>
                 </div>
-                <div class="ftc-working">График работы по будням с 9:00 до 18:00</div>
+                <div class="ftc-working">Working hours: 9:00 a.m till 18:00 p.m.</div>
                 <div class="ftc-email">Email: whoknows@.whoknows.com</div>
             </div>
             <div class="footer-top-social"></div>
         </div>
         <div class="footer-bottom">
             <div class="support">
-                <div class="support-title">Поддержка</div>
+{#                <div class="support-title">Support</div>#}
                 <div class="support-items">
-                    <div class="support-items-copyright">©2020. Пиросмани</div>
-                    <div class="support-items-terms">Условия и соглашения</div>
-                    <div class="support-items-policy">Политика конфиденциальности</div>
+                    <div class="support-items-copyright">©2020. Unknown</div>
+                    <div class="support-items-terms">Terms and agreements</div>
+                    <div class="support-items-policy">Privacy policy</div>
                 </div>
             </div>
         </div>

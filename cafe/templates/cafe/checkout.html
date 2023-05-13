@@ -1,0 +1,98 @@
+{% extends 'cafe/base.html' %}
+
+{% block main_content %}
+    <div class="container">
+        <div class="checkout-row">
+            <div class="checkout">
+                Checkout
+                <div class="checkout-order">
+                    <div class="checkout-order-number">Order # 12345</div>
+                    <div class="checkout-order-customer">Customer: {{ order.customer }}</div>
+                    <div class="checkout-order-delivery">Delivery addrress: 12 Steel str</div>
+                </div>
+                <div class="checkout-items">
+                    <div class="checkout-items-header">your order</div>
+                    {% for order_item in order_items %}
+                        <div class="checkout-items-card">
+                            {{ order_item.quantity }} * {{ order_item.product.name }} = {{ order_item.get_items_cost }}
+                            uah
+                        </div>
+                    {% endfor %}
+                    <div class="checkout-total-value">total: { order.get_order_cost }} uah</div>
+                    <button type="submit" class="checkout-btn order_btn">Proceed to payment</button>
+                    <button type="submit" class="back-to-cart-btn order_btn">Back to cart</button>
+                </div>
+            </div>
+            <div class="payment">
+                <div id="dropin-container"></div>
+                <form id="payment-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="nonce" name="payment_method_nonce">
+                    <input type="hidden" id="amount" name="amount" value={{ order.get_order_cost }}>
+                    <button type="submit" id="submit-button" class="order_btn">Pay</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://js.braintreegateway.com/web/dropin/1.37.0/js/dropin.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/dropin/1.31.2/js/dropin.min.js"></script>
+    <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.92.2/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.92.2/js/google-payment.min.js"></script>
+    <script>
+        const checkOutBtn = document.querySelector('.checkout-btn')
+        const backToCartBtn = document.querySelector('.back-to-cart-btn')
+        checkOutBtn.addEventListener('click', function (event) {
+            const payByCardBlock = document.querySelector('.payment')
+            console.log(payByCardBlock)
+            payByCardBlock.style.display = 'block';
+        })
+        backToCartBtn.addEventListener('click', function (event) {
+            window.location.href = "{% url 'cafe:cart' %}";
+        })
+    </script>
+    <script>
+        const form = document.querySelector('#payment-form');
+        const submit = document.querySelector('#submit-button');
+        const nonce = document.querySelector('#nonce');
+
+        braintree.dropin.create({
+            authorization: '{{ client_token }}',
+            container: '#dropin-container',
+            card: {
+                cardholderName: true
+            },
+            paypal: {
+                flow: 'checkout',
+                amount: '10.00',
+                currency: 'UAH'
+                    },
+
+            translations: {
+                payingWith: 'You are paying with {{paymentSource}}',
+                chooseAnotherWayToPay: 'My custom chooseAnotherWayToPay string',
+                // Any other custom translation strings
+            }
+        }, function (createErr, instance) {
+            if (createErr) {
+                console.error(createErr);
+                return;
+            }
+
+            submit.removeAttribute('disabled');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
+                    if (requestPaymentMethodErr) {
+                        console.error(requestPaymentMethodErr);
+                        return;
+                    }
+                    nonce.value = payload.nonce;
+                    form.submit();
+                });
+            });
+        });
+    </script>
+{% endblock %}

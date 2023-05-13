@@ -132,7 +132,7 @@
                                 <button id="place_order_btn" class="order_btn"
                                         {% if request.user.is_authenticated %}{% else %}disabled{% endif %}
                                 >
-                                    {% if request.user.is_authenticated %}Оформить заказ {% else %} Login to proceed {% endif %}</button>
+                                    {% if request.user.is_authenticated %}Checkout {% else %} Login to proceed {% endif %}</button>
                             </div>
                         </div>
                         <div class="coupon">
@@ -148,22 +148,13 @@
             </div>
         </div>
     </div>
-    {#    <script>#}
-    {#        document.getElementById("place_order_btn").addEventListener("click", function () {#}
-    {#            window.location.href = "{% url 'cafe:order_checkout' %}";#}
-    {#        });#}
-    {#    </script>#}
-
-    {#    <script>#}
-    {#        console.log('in action', {{ pcs_ordered }})#}
-    {#        const cart_indicator = document.getElementsByClassName('cart_indicator')[0]#}
-    {#        cart_indicator.innerText =#}
-    {#        {{ pcs_ordered }}#}
-    {#updateCartPicture({{ pcs_ordered }})#}
-    {#    </script>#}
+        <script>
+            document.getElementById("place_order_btn").addEventListener("click", function () {
+                window.location.href = "{% url 'cafe:checkout' %}";
+            });
+        </script>
 {% endblock %}
 
 {% block jscode %}
-
     <script src="{% static 'cafe/js/main.js' %}"></script>
 {% endblock %}

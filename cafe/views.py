@@ -1,11 +1,16 @@
 import json
 from decimal import Decimal
+import braintree
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import DetailView, ListView
+
+from pirosmani.settings import gateway
 from .mixins import ContextMixin
 from .models import Product, Order, OrderItems
+from .tasks import transaction_email_notification
 
 
 class Index(ContextMixin, ListView):
@@ -176,6 +181,54 @@ class Cart:
         return cart_info, self.cart
 
 
+class CheckOut(View):
+    def get(self, request):
+        client_token = braintree.ClientToken.generate()
+        order = Order.objects.get(customer=request.user, is_completed=False)
+        order_items = OrderItems.objects.filter(order=order)
+        context = {
+            'client_token': client_token,
+            'order': order,
+            'order_items': order_items
+        }
+        return render(request, 'cafe/checkout.html', context)
+
+    def post(self, request):
+        nonce = self.request.POST.get('payment_method_nonce')
+        amount = Decimal(self.request.POST.get('amount').replace(',', '.'))
+        result = braintree.Transaction.sale({
+            'amount': amount,
+            'payment_method_nonce': nonce,
+            'options': {
+                'submit_for_settlement': True
+            }
+        })
+        print('in post of payment')
+        print(f'nonce, {nonce}')
+        print(f'amount, {amount} {type(amount)}')
+        print(f'result {result}')
+
+        if result.is_success:
+            order = Order.objects.get(customer=request.user, is_completed=False)
+            order.is_completed = True
+            order.transaction_id = result.transaction.id
+            order.save()
+            transaction_email_notification(request.user)
+            return redirect('cafe:payment_success')
+        else:
+            # Return error response with error message
+            # return JsonResponse({'success': False, 'message': result.message})
+            return redirect('cafe:payment_fail')
+
+
+def payment_success(request):
+    return render(request, 'cafe/payment_success.html')
+
+
+def payment_fail(request):
+    return render(request, 'cafe/payment_fail.html')
+
+
 def delivery_terms(request):
     return render(request, 'cafe/delivery_terms.html')
 
@@ -184,8 +237,24 @@ def payment_terms(request):
     return render(request, 'cafe/payment_terms.html')
 
 
-def order_checkout(request):
-    order = Order.objects.get(customer=request.user, is_completed=False)
-    order.is_completed = True
-    order.save()
-    return redirect('/')
+# class GenerateTokenView(View):
+#     def get(self, request, *args, **kwargs):
+#         token = braintree.ClientToken.generate()
+#         return JsonResponse({'token': token})
+#
+#
+# class ProcessPaymentView(View):
+#     def post(self, request, *args, **kwargs):
+#         nonce = request.POST.get('payment_method_nonce')
+#         amount = request.POST.get('amount')
+#         result = braintree.Transaction.sale({
+#             'amount': amount,
+#             'payment_method_nonce': nonce,
+#             'options': {
+#                 'submit_for_settlement': True
+#             }
+#         })
+#         if result.is_success:
+#             return JsonResponse({'success': True})
+#         else:
+#             return JsonResponse({'success': False, 'message': result.message})

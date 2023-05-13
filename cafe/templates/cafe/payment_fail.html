@@ -1,0 +1,12 @@
+{% extends 'cafe/base.html' %}
+
+{% block main_contentdelivery %}
+    <h2 class="container">Your payment failed</h2>
+    <div></div>
+    <div>you will be redirected to the main page</div>
+    <script>
+        setTimeout(function () {
+            window.location.href = "{% url 'cafe:main_page' %}";
+        }, 5000);
+    </script>
+{% endblock %}
