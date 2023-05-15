@@ -154,3 +154,6 @@ BRAINTREE = {
     'private_key': BRAINTREE_PRIVATE_KEY,
     'use_ssl': False,
 }
+
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'

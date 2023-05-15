@@ -9,7 +9,6 @@
 {% block jstop %}
     <script>
         let user = '{{ request.user }}'
-
         function getToken(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -24,7 +23,6 @@
             }
             return cookieValue;
         }
-
         const csrftoken = getToken('csrftoken');
     </script>
 {% endblock %}
@@ -144,8 +142,20 @@
                                 </div>
                                 {% if request.user.is_authenticated %}
                                     <button id="place_order_btn" class="order_btn btn">Checkout</button>
+                                    <script>
+                                        console.log('click auth')
+                                        document.getElementById("place_order_btn").addEventListener("click", function () {
+                                            window.location.href = "{% url 'cafe:checkout' %}";
+                                        });
+                                    </script>
                                 {% else %}
                                     <button id="login_place_order_btn" class="order_btn btn">Login to proceed</button>
+                                    <script>
+                                     console.log('click NOT auth')
+                                        document.getElementById("login_place_order_btn").addEventListener("click", function () {
+                                            window.location.href = "{% url 'account:login' %}";
+                                        });
+                                    </script>
                                 {% endif %}
                             </div>
                         </div>
@@ -154,16 +164,8 @@
             </div>
         </div>
     </div>
-    <script>
-        document.getElementById("place_order_btn").addEventListener("click", function () {
-            window.location.href = "{% url 'cafe:checkout' %}";
-        });
-    </script>
-    <script>
-        document.getElementById("login_place_order_btn").addEventListener("click", function () {
-            window.location.href = "{% url 'account:login' %}";
-        });
-    </script>
+
+
 {% endblock %}
 
 {% block jscode %}

@@ -3,7 +3,6 @@ from decimal import Decimal
 import braintree
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import DetailView, ListView
 from .mixins import ContextMixin, CartActionsMixin
@@ -43,7 +42,6 @@ class CartView(CartActionsMixin, ContextMixin, ListView):
             cart_content = order.orderitems_set.filter(quantity__gt=0)
 
         else:
-            #cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
             cart_content = self.get_cookie_cart_content()
             if cart_content:
                 cart_content = [
@@ -64,7 +62,6 @@ class CartView(CartActionsMixin, ContextMixin, ListView):
             order, created = Order.objects.get_or_create(customer=customer, is_completed=False)
             total_value = order.get_order_cost
         else:
-            #cart_content = json.loads(self.request.COOKIES.get('cart', '[]'))
             cart_content = self.get_cookie_cart_content()
             total_value = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart_content.items()])
         context_data = super(CartView, self).get_context_data()
@@ -88,6 +85,7 @@ class CartView(CartActionsMixin, ContextMixin, ListView):
         if request.user.is_anonymous:
             response.set_cookie('cart', json.dumps(cart_info[1]))
         return response
+        # , samesite='Lax'
 
 
 class Cart(CartActionsMixin):
@@ -104,13 +102,15 @@ class Cart(CartActionsMixin):
             self.order, self.created = Order.objects.get_or_create(customer=self.customer, is_completed=False)
             self.cart = self.order.orderitems_set.filter(quantity__gt=0)
         else:
-            #self.cart = json.loads(request.COOKIES.get('cart', '{}'))
             self.cart = self.get_cookie_cart_content()
 
     def get_cart_info_anonymous_user(self, cart, product_id=None):
-        product = Product.objects.get(id=product_id) if product_id else 0
         quantity = cart.get(product_id, 0)
-        total_item = quantity * product.price if product else 0
+        if product_id:
+            product = Product.objects.get(id=product_id)
+            total_item = quantity * product.price
+        else:
+            total_item = 0
         pcs_ordered = sum([pcs for pcs in cart.values()])
         grand_total = sum([Product.objects.get(id=article).price * quantity for article, quantity in cart.items()])
         cart_info = self.make_cart_info(quantity, total_item, product_id, pcs_ordered, grand_total)
@@ -204,10 +204,10 @@ class CheckOut(View):
                 'submit_for_settlement': True
             }
         })
-        print('in post of payment')
-        print(f'nonce, {nonce}')
-        print(f'amount, {amount} {type(amount)}')
-        print(f'result {result}')
+        # print('in post of payment')
+        # print(f'nonce, {nonce}')
+        # print(f'amount, {amount} {type(amount)}')
+        # print(f'result {result}')
 
         if result.is_success:
             order = Order.objects.get(customer=request.user, is_completed=False)
@@ -217,7 +217,6 @@ class CheckOut(View):
             transaction_email_notification(request.user)
             return redirect('cafe:payment_success')
         else:
-            # Return error response with error message
             # return JsonResponse({'success': False, 'message': result.message})
             return redirect('cafe:payment_fail')
 
@@ -236,26 +235,3 @@ def delivery_terms(request):
 
 def payment_terms(request):
     return render(request, 'cafe/payment_terms.html')
-
-
-# class GenerateTokenView(View):
-#     def get(self, request, *args, **kwargs):
-#         token = braintree.ClientToken.generate()
-#         return JsonResponse({'token': token})
-#
-#
-# class ProcessPaymentView(View):
-#     def post(self, request, *args, **kwargs):
-#         nonce = request.POST.get('payment_method_nonce')
-#         amount = request.POST.get('amount')
-#         result = braintree.Transaction.sale({
-#             'amount': amount,
-#             'payment_method_nonce': nonce,
-#             'options': {
-#                 'submit_for_settlement': True
-#             }
-#         })
-#         if result.is_success:
-#             return JsonResponse({'success': True})
-#         else:
-#             return JsonResponse({'success': False, 'message': result.message})
