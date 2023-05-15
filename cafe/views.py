@@ -83,9 +83,8 @@ class CartView(CartActionsMixin, ContextMixin, ListView):
             raise ValueError('unknown command')
         response = JsonResponse(cart_info[0], safe=False)
         if request.user.is_anonymous:
-            response.set_cookie('cart', json.dumps(cart_info[1]))
+            response.set_cookie('cart', json.dumps(cart_info[1]), samesite='None')
         return response
-        # , samesite='Lax'
 
 
 class Cart(CartActionsMixin):
