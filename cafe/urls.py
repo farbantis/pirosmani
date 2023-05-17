@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import ProductDetailView, Index, delivery_terms, payment_terms, CartView, \
-    CheckOut, payment_success, payment_fail
+    CheckOut, payment_success, payment_fail, InvoicePDF
 
 app_name = 'cafe'
 
@@ -14,6 +14,7 @@ urlpatterns = [
     path('cafe/checkout/', CheckOut.as_view(), name='checkout'),
     path('cafe/payment_success/', payment_success, name='payment_success'),
     path('cafe/payment_fail/', payment_fail, name='payment_fail'),
+    path('cafe/pdf_receipt/<int:pk>/', InvoicePDF.as_view(), name='invoice_pdf'),
     path('cafe/<str:group>/', Index.as_view(), name='main_page'),
 ]
 

@@ -21,3 +21,8 @@ ALLOWED_HOSTS = ['localhost', os.getenv('ALLOWED_HOSTS_IP'), 'qimeer.online', '.
 broker_url = os.getenv('broker_url')  # Use Redis on the VPS server
 result_backend = os.getenv('result_backend')  # Use Redis on the VPS server
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_HTTPONLY = False

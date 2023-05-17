@@ -9,6 +9,7 @@
 {% block jstop %}
     <script>
         let user = '{{ request.user }}'
+
         function getToken(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -23,6 +24,7 @@
             }
             return cookieValue;
         }
+
         const csrftoken = getToken('csrftoken');
     </script>
 {% endblock %}
@@ -50,7 +52,7 @@
                                 </div>
                                 <div class="cart-group-two">
                                     <div class="cart_item_cost">
-                                        {{ item.product.price }}x
+                                        {{ item.product.price }} x
                                     </div>
                                     <div class="cart_quantity">
                                         <div data-product="{{ item.product.id }}" data-action="remove"
@@ -61,7 +63,7 @@
                                              class="card_quantity_arrow update-cart">+
                                         </div>
                                     </div>
-                                    <div data-item_total class="cart_price">{{ item.get_items_cost }} грн</div>
+                                    <div data-item_total class="cart_price"> uah</div>
                                 </div>
 
                             </div>
@@ -86,7 +88,7 @@
                                 </div>
                                 <div class="cart-group-two">
                                     <div class="cart_item_cost">
-                                        {{ item.price }}x
+                                        {{ item.price }} x
                                     </div>
                                     <div class="cart_quantity">
                                         <div data-product="{{ item.id }}" data-action="remove"
@@ -97,7 +99,7 @@
                                              class="card_quantity_arrow update-cart">+
                                         </div>
                                     </div>
-                                    <div data-item_total class="cart_price">{{ item.quantity|mult:item.price }}грн</div>
+                                    <div data-item_total class="cart_price">uah</div>
                                 </div>
                             </div>
                         {% endfor %}
@@ -107,7 +109,7 @@
                 {% endif %}
             </div>
 
-            <div class="delivery">
+            <div class="order-delivery">
                 {% if cart_content %}
                     <div class="right">
                         <div class="oder">
@@ -118,23 +120,17 @@
                                 <div class="order_quantity">
                                     <div class="order_quantity_title">Value of the goods</div>
                                     <div data-grand_total class="order_quantity_figure">
-                                        {% if request.user.is_authenticated %}
-                                            {{ order.get_order_cost }}
-                                            {{ total_value }}
-                                        {% else %}
-                                            {{ total_value }}
-                                        {% endif %}
-                                        uah
+                                        {{ order_value }} uah
                                     </div>
                                 </div>
                                 <div class="order_promo">
                                     <div class="order_promo_title">Promo code</div>
-                                    <div class="order_promo_figure"> 0 uah</div>
+                                    <div data-promo class="order_promo_figure"> 0</div>
                                 </div>
 
                                 <div class="order_total">
                                     <div class="order_total_title">Total</div>
-                                    <div class="order_total_figure">{{ order.get_order_cost }} uah</div>
+                                    <div data-total_checkout class="order_total_figure">{{ order_value }} uah</div>
                                 </div>
                                 <div class="coupon_data">
                                     <input class="coupon_data_input" placeholder="  Enter Promo Code here"/>
@@ -142,20 +138,8 @@
                                 </div>
                                 {% if request.user.is_authenticated %}
                                     <button id="place_order_btn" class="order_btn btn">Checkout</button>
-                                    <script>
-                                        console.log('click auth')
-                                        document.getElementById("place_order_btn").addEventListener("click", function () {
-                                            window.location.href = "{% url 'cafe:checkout' %}";
-                                        });
-                                    </script>
                                 {% else %}
                                     <button id="login_place_order_btn" class="order_btn btn">Login to proceed</button>
-                                    <script>
-                                     console.log('click NOT auth')
-                                        document.getElementById("login_place_order_btn").addEventListener("click", function () {
-                                            window.location.href = "{% url 'account:login' %}";
-                                        });
-                                    </script>
                                 {% endif %}
                             </div>
                         </div>
@@ -164,10 +148,26 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById("login_place_order_btn").addEventListener("click", function () {
+            window.location.href = "{% url 'account:login' %}";
+        });
+    </script>
+    <script>
+        document.getElementById("place_order_btn").addEventListener("click", function () {
+            window.location.href = "{% url 'cafe:checkout' %}";
+        });
+    </script>
+    <script>
+        document.getElementsByClassName("coupon_data_confirm_btn").addEventListener("click", function () {
 
+            window.location.href = "{% url 'cafe:checkout' %}";
+        });
+    </script>
 
 {% endblock %}
 
 {% block jscode %}
     <script src="{% static 'cafe/js/main.js' %}"></script>
+{#    <script src="{% static 'cafe/js/index.js' %}"></script>#}
 {% endblock %}

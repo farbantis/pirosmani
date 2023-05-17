@@ -37,27 +37,26 @@ function updateCart(productId, action, neededDiv) {
     })
           .then((data) => {
              const quantity = data.quantity;
-             const total = data.total_item;
-             const grand_total_value = data.grand_total;
+             const currentItemValue = data.total_item;
+             const currentOrderValue = data.grand_total;
              const total_pcs_ordered = data.pcs_ordered;
              // console.log('there response', quantity, total, grand_total_value)
              // console.log('pcs ordered ')
-             updateCartPicture(total_pcs_ordered, grand_total_value)
-             updateFrontEnd(productId, quantity, total, grand_total_value, neededDiv, action)
+             updateCartPicture(total_pcs_ordered, currentOrderValue)
+             updateFrontEnd(productId, quantity, currentItemValue, currentOrderValue, neededDiv, action)
   });
 }
 
 
-function updateCartPicture(total_pcs_ordered, grand_total_value) {
-
+function updateCartPicture(total_pcs_ordered, currentOrderValue) {
     const cart_indicator = document.getElementsByClassName('cart_indicator')[0]
     const totalOrderFigure = document.getElementsByClassName('order_total_figure')[0]
     cart_indicator.innerText = total_pcs_ordered
-    totalOrderFigure.innerHTML = grand_total_value
+    totalOrderFigure.innerText = currentOrderValue
 }
 
 
-function updateFrontEnd(productId, quantity, total_item, grand_total_value, neededDiv, action) {
+function updateFrontEnd(productId, quantity, currentItemValue, currentOrderValue, neededDiv, action) {
     // document.getElementsByClassName('order_total_figure')[0].innerHTML = grand_total
     if (action ==='remove') {
         const amountWrapper = neededDiv.closest('.cart_quantity');
@@ -65,11 +64,12 @@ function updateFrontEnd(productId, quantity, total_item, grand_total_value, need
 
         if (counter.innerText > '1') {
             counter.innerText = --counter.innerText;
-            total(neededDiv, total_item, grand_total_value)
+            total(neededDiv, currentItemValue, currentOrderValue)
         }
         else {
             const childWrapper = neededDiv.closest('.cart');
             childWrapper.remove()
+            total(neededDiv, currentItemValue, currentOrderValue)
         }
     }
 
@@ -77,20 +77,25 @@ function updateFrontEnd(productId, quantity, total_item, grand_total_value, need
         const amountWrapper = neededDiv.closest('.cart_quantity');
         const counter = amountWrapper.querySelector('[data-counter]');
         counter.innerText = ++counter.innerText;
-        total(neededDiv, total_item, grand_total_value)
+        total(neededDiv, currentItemValue, currentOrderValue)
     }
 
     if (action === 'removeOrderItem') {
         const toRemoveDiv = neededDiv.closest('.cart')
         toRemoveDiv.remove()
+        total(neededDiv, currentItemValue, currentOrderValue)
         location.reload()
     }
 }
 
-function total(neededDiv, total_item, grand_total_value) {
+function total(neededDiv, currentItemValue, currentOrderValue) {
         const cardWrapper = neededDiv.closest('.cart');
-        const amountWrapper = cardWrapper.querySelector('[data-item_total]');
-        const totalWrapper = document.querySelector('[data-grand_total]')
-        amountWrapper.innerText = total_item + "грн";
-        totalWrapper.innerText = grand_total_value + "грн";
+        const currentItemValueDiv = cardWrapper.querySelector('[data-item_total]');
+        const currentOrderValueDiv = document.querySelector('[data-grand_total]')
+        const promoDiscount = document.querySelector('.order_promo_figure').innerHTML
+        const checkoutOrderValueDiv = document.querySelector('[data-total_checkout]')
+        currentItemValueDiv.innerHTML = currentItemValue + " uah";
+        currentOrderValueDiv.innerText = currentOrderValue + " uah";
+        checkoutOrderValueDiv.innerHTML = (currentOrderValue - parseFloat(promoDiscount)).toFixed(2) + " uah"
+
 }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>Invoice #</div>
+<div>created at:</div>
+<div>order id:</div>
+<div>issued to:</div>
+<div>{{ order.customer.last_name }}{{ order.customer.first_name }}</div>
+<div>email:</div>
+<div>{{ order.customer.email }}</div>
+<div>current status</div>
+<div>{{ order.customer.customeradd.status }}</div>
+
+<div>
+    {% for item in order.orderitems_set.all %}
+        <div class="cart idd{{ item.product_id }}">
+        <div class="cart-group-one">
+            <div class="cart_cancel">
+                {{ item.id }}
+            </div>
+            <div class="cart_picture">
+                {{ item.product.price }}
+            </div>
+            <div class="cart_item">
+                {{ item.quantity }}
+            </div>
+            <div>
+                {{ item.get_item_cost }}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    <div>Total: <span>{{ order.get_order_cost }}</span></div>
+</body>
+</html>

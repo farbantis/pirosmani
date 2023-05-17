@@ -1,3 +1,13 @@
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
+
+r = redis.Redis(host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT,
+                db=settings.REDIS_DB)
+r.set('foo', 'bar'); r.get('foo');
+total_views = r.incr(f'image:{image.id}:views')
+
 # match action:
 #     case 'add':
 #         order_item.quantity += 1
