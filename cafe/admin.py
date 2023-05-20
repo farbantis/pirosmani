@@ -1,8 +1,9 @@
 from django.contrib import admin
 from .models import Product, Menu, Order, OrderItems
+from import_export.admin import ExportActionMixin
 
 
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ExportActionMixin, admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name', )}
 
 

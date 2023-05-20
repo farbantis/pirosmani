@@ -3,37 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        .container {
+            margin: 0 auto;
+        }
+
+        .pdf-invoice {
+            color: blue;
+            text-align: center;
+        }
+
+        .pdf-items-wrapper {
+            margin-top: 30px;
+        }
+
+        .tg {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .tg td {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+
+        .tg th {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+
+        .tg .tg-bg8j {
+            font-family: "Comic Sans MS", cursive, sans-serif !important;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: top
+        }
+
+        .tg .tg-2ekc {
+            font-family: "Comic Sans MS", cursive, sans-serif !important;
+            font-size: 16px;
+            text-align: center;
+            vertical-align: top
+        }
+
+        .tg .tg-kyge {
+            font-family: "Comic Sans MS", cursive, sans-serif !important;
+            font-size: 16px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .pdf-item-cost{
+            min-width: 100px;
+        }
+
+        .pdf-total {
+            text-align: right;
+            font-family: "Comic Sans MS", cursive, sans-serif !important;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-<div>Invoice #</div>
-<div>created at:</div>
-<div>order id:</div>
-<div>issued to:</div>
-<div>{{ order.customer.last_name }}{{ order.customer.first_name }}</div>
-<div>email:</div>
-<div>{{ order.customer.email }}</div>
-<div>current status</div>
-<div>{{ order.customer.customeradd.status }}</div>
+<div class="container">
+    <h1 class="pdf-invoice">Invoice #</h1>
+    <div class="pdf-created">created at: {{ order.date_ordered }}</div>
+    <div>order id: {{ order.id }}</div>
+    <div>issued to: {{ order.customer.last_name }} {{ order.customer.first_name }}</div>
+    <div>email: {{ order.customer.email }}</div>
+    <div>current status: {{ order.customer.customeradd.status }}</div>
+    <div class="pdf-items-wrapper">
 
-<div>
-    {% for item in order.orderitems_set.all %}
-        <div class="cart idd{{ item.product_id }}">
-        <div class="cart-group-one">
-            <div class="cart_cancel">
-                {{ item.id }}
-            </div>
-            <div class="cart_picture">
-                {{ item.product.price }}
-            </div>
-            <div class="cart_item">
-                {{ item.quantity }}
-            </div>
-            <div>
-                {{ item.get_item_cost }}
-            </div>
-        </div>
-    {% endfor %}
+
+        <table class="tg">
+            <thead>
+            <tr>
+                <th class="tg-bg8j">#</th>
+                <th class="tg-bg8j">Description</th>
+                <th class="tg-bg8j">Quantity, pcs</th>
+                <th class="tg-bg8j">Price per piece</th>
+                <th class="tg-bg8j">Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in order.orderitems_set.all %}
+                <tr>
+                    <td class="tg-2ekc">{{ forloop.counter }}</td>
+                    <td class="tg-kyge">{{ item.product }}</td>
+                    <td class="tg-2ekc">{{ item.quantity }}</td>
+                    <td class="tg-2ekc">{{ item.product.price }}</td>
+                    <td class="tg-kyge pdf-item-cost">$ {{ item.get_items_cost }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <div>Total: <span>{{ order.get_order_cost }}</span></div>
+    <div class="pdf-total">Total: <span>{{ order.get_order_cost }}</span></div>
+</div>
+</div>
 </body>
 </html>

@@ -634,7 +634,7 @@ header {
 .cart_item_cost {
     display: flex;
     align-items: center;
-    width: 60px;
+    min-width: 70px;
 }
 
 .cart_quantity {

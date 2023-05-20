@@ -1,9 +1,10 @@
 import json
 from decimal import Decimal
 import braintree
+import weasyprint
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template.loader import render_to_string
+from django.template.loader import render_to_string, get_template
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.conf import settings
@@ -31,28 +32,6 @@ class ProductDetailView(ContextMixin, DetailView):
     model = Product
     context_object_name = 'product'
     template_name = 'cafe/product_detail.html'
-
-
-# class InvoicePDF(DetailView):
-#     model = Order
-#     context_object_name = 'order'
-#     template_name = 'cafe/pdf_receipt.html'
-#
-#     def get_context_data(self, request, *args, **kwargs):
-#         context_data = super().get_context_data(**kwargs)
-#         context_data['order_items'] = OrderItems.objects.filter(order=self.model.pk)
-#
-#     def get(self, request, *args, **kwargs):
-#         self.object = self.get_object()
-#         context = self.get_context_data(object=self.object)
-#         html_to_pdf = render_to_string(
-#             'cafe/pdf_receipt.html',
-#             {'order': self.model, 'order_items': OrderItems.objects.filter(order=self.object)}
-#         )
-#         response = HttpResponse(content_type='application/pdf')
-#         response['Content-Disposition'] = f'filename=order_{self.object}.pdf'
-#         weasyprint.HTML(string='html').write_pdf(response, stylesheet=[weasyprint.CSS(settings.STATIC_ROOT + 'css/pdf.css')])
-#         return response
 
 
 class CartView(CartActionsMixin, ContextMixin, ListView):
@@ -261,3 +240,12 @@ def delivery_terms(request):
 
 def payment_terms(request):
     return render(request, 'cafe/payment_terms.html')
+
+
+def order_pdf(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    html = render_to_string('cafe/pdf_receipt.html', {'order': order})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename=order_{order.id}.pdf'
+    weasyprint.HTML(string=html).write_pdf(response, stylesheets=[weasyprint.CSS(str(settings.STATIC_ROOT) + '/cafe/css/pdf.css')])
+    return response

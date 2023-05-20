@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'braintree',
+    'import_export',
 
 ]
 
@@ -159,5 +160,7 @@ BRAINTREE = {
     'use_ssl': False,
 }
 
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+IMPORT_EXPORT_SKIP_ADMIN_LOG = True
 
 
