@@ -1,9 +1,9 @@
-import datetime
-
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.urls import reverse
-from account.models import Customer, CustomerAdd
+from django.utils import timezone
+
+from account.models import Customer, CustomerAdd, User
 from cafe.utils import MIN_DISCOUNT_OF_COUPON, MAX_DISCOUNT_OF_COUPON
 
 
@@ -77,8 +77,8 @@ class OrderItems(models.Model):
 
 
 class Coupon(models.Model):
-    owner = models.ForeignKey(CustomerAdd, on_delete=models.CASCADE, blank=True, null=True)
-    code = models.CharField(max_length=8)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    code = models.CharField(max_length=15, unique=True)
     discount = models.IntegerField(
         validators=[
             MinValueValidator(MIN_DISCOUNT_OF_COUPON),
@@ -94,8 +94,5 @@ class Coupon(models.Model):
 
     @property
     def is_coupon_valid(self):
-        current_date = datetime.datetime.now()
-        is_active = (self.valid_from < current_date < self.valid_until) and self.is_active and (not self.is_used)
-        return is_active
-
-
+        current_date = timezone.now()
+        return (self.valid_from < current_date < self.valid_until) and self.is_active and (not self.is_used)

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Menu, Order, OrderItems
+from .models import Product, Menu, Order, OrderItems, Coupon
 from import_export.admin import ExportActionMixin
 
 
@@ -21,3 +21,5 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(Menu)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Order, OrderAdmin)
+admin.site.register(Coupon)
+

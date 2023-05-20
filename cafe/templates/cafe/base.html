@@ -54,7 +54,10 @@
             </nav>
 
             <div class="h_phone">
-                <img src="{% static 'cafe/images/details/phone.svg' %}" alt="phone"> +88 888 888-88-88</div>
+                <a href="tel:5551234567"><img src="{% static 'cafe/images/details/phone.svg' %}" alt="Call 5551234567" />+88 888 888-88-88</a>
+{#                <img src="{% static 'cafe/images/details/phone.svg' %}" alt="phone"> +88 888 888-88-88#}
+
+            </div>
             <div class="h_icons">
                 <div class="h_login">
                     {% if user.is_authenticated %}
@@ -71,9 +74,9 @@
             <div class="h_basket">
                 <a href="{% url 'cafe:cart' %}">
                     <img class="h_img" src="{% static 'cafe/images/details/shopping-cart.svg' %}" alt="cart"/>
-                    <span id="cart_indicator" class="cart_indicator">{% if order_quantity %}
+                    <span id="cart_indicator" class="cart_indicator">{% if order_quantity > 0 %}
                         {{ order_quantity }} {% endif %}</span>
-                    <div class="order_total_figure">{% if order_value %} {{ order_value }} {% endif %} </div>
+                    <div class="order_total_figure">{% if order_value > 0 %} {{ order_value }} {% endif %} </div>
                 </a>
             </div>
             </div>

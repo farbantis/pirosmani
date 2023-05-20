@@ -9,7 +9,7 @@ from django.views import View
 from django.views.generic import DetailView, ListView
 from django.conf import settings
 from .mixins import ContextMixin, CartActionsMixin
-from .models import Product, Order, OrderItems
+from .models import Product, Order, OrderItems, Coupon
 from .tasks import transaction_email_notification
 
 
@@ -53,7 +53,8 @@ class CartView(CartActionsMixin, ContextMixin, ListView):
                         'name': Product.objects.get(id=key).name,
                         'picture': Product.objects.get(id=key).picture,
                         'quantity': value,
-                        'price': Product.objects.get(id=key).price
+                        'price': Product.objects.get(id=key).price,
+                        'item_value': Product.objects.get(id=key).price * value
                     } for key, value in cart_content.items()]
             else:
                 cart_content = {}
@@ -219,11 +220,29 @@ class CheckOut(View):
             order.is_completed = True
             order.transaction_id = result.transaction.id
             order.save()
+            order_pdf(request, order.id)
             transaction_email_notification(request.user)
             return redirect('cafe:payment_success')
         else:
             # return JsonResponse({'success': False, 'message': result.message})
             return redirect('cafe:payment_fail')
+
+
+def apply_coupon(request):
+    # записать купон в бд заказа ? передать сюда номер заказа
+    data = json.loads(request.body)
+    coupon_code = data['couponCode']
+    coupon = Coupon.objects.filter(code=coupon_code)[0]
+    if coupon:
+        if coupon.is_coupon_valid:
+            coupon.owner = request.user
+            coupon.save()
+            discount = coupon.discount
+        else:
+            discount = -1
+    else:
+        discount = 0
+    return JsonResponse({"discount": discount}, safe=False)
 
 
 def payment_success(request):

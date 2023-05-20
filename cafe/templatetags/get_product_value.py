@@ -5,4 +5,4 @@ register = template.Library()
 
 @register.filter
 def mult(quantity, price):
-    return quantity * price
+    return str(quantity * price).replace(',', '.')

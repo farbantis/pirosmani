@@ -33,5 +33,4 @@ function updateCartPicture(pcs_ordered, grand_total) {
     const totalOrderFigure = document.getElementsByClassName('order_total_figure')[0]
     cart_indicator.innerText = pcs_ordered
     totalOrderFigure.innerHTML = grand_total
-
 }

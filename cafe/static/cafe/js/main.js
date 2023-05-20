@@ -91,11 +91,7 @@ function updateFrontEnd(productId, quantity, currentItemValue, currentOrderValue
 function total(neededDiv, currentItemValue, currentOrderValue) {
         const cardWrapper = neededDiv.closest('.cart');
         const currentItemValueDiv = cardWrapper.querySelector('[data-item_total]');
-        const currentOrderValueDiv = document.querySelector('[data-grand_total]')
-        const promoDiscount = document.querySelector('.order_promo_figure').innerHTML
-        const checkoutOrderValueDiv = document.querySelector('[data-total_checkout]')
+        const currentOrderValueDiv = document.getElementsByClassName('order_quantity_figure')[0]
         currentItemValueDiv.innerHTML = currentItemValue + " uah";
         currentOrderValueDiv.innerText = currentOrderValue + " uah";
-        checkoutOrderValueDiv.innerHTML = (currentOrderValue - parseFloat(promoDiscount)).toFixed(2) + " uah"
-
 }

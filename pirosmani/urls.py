@@ -5,9 +5,9 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('', include('cafe.urls')),
     path('admin/', admin.site.urls),
     path('auth/', include('account.urls')),
-    path('', include('cafe.urls')),
     path('api/account/', include('account.api.urls')),
     path('api/cafe/', include('cafe.api.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
