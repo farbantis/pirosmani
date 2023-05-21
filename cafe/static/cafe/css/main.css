@@ -783,6 +783,10 @@ header {
     display: flex;
 }
 
+.main-row-top{
+    display: flex;
+}
+
 .detail_main {
     margin-right: 36px;
 }

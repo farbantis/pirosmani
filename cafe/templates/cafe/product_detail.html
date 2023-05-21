@@ -14,77 +14,84 @@
 {% block main_content %}
     <div class="container">
         <div class="main-row_delivery">
-            <div class="detail_main">
-                <div class="detail_main__picture">
-                    <img src="{{ product.picture.url }}">
-                </div>
-                <div class="detail_main__information">
-
-
-                    <!-- Tab links -->
-                    <div class="tab">
-                        <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">О товаре</button>
-                        <button class="tablinks" onclick="openCity(event, 'Paris')">Параметры</button>
-                        <button class="tablinks" onclick="openCity(event, 'Tokyo')">Отзывы</button>
-                    </div>
-                    <!-- Tab content -->
-                    <div id="London" class="tabcontent">
-                        <h3 class="detail_main__information_heading">Описание</h3>
-                        <br>
-                        <p>Полутвердый пластичный однородный сыр, слегка ломкий на изгибе. Пажитник придает легкое ореховое послевкусие.
-                            В Италии считается столовым сыром, который подходит к любому времени суток и к любому блюду и к вину</p>
-                        <p>Вес головки 500 г. +/-10%. Цена за 1 кг.</p>
-                        <p>Продукция компании Alpenville изготовлена преимущественно из Шарангского молока</p>
-                    </div>
-                    <div id="Paris" class="tabcontent">
-                        <h3 class="detail_main__information_heading">Параметры</h3>
-                        <div>
-                            <br>
-                            <p>Калории: 420</p>
-                            <p>Жиры: 54</p>
-                            <p>Белки: 27</p>
-                            <p>КУглеводы: 18</p>
-                            <p>Масса: 500 грамм</p>
-                        </div>
-                    </div>
-                    <div id="Tokyo" class="tabcontent">
-                        <h3 class="detail_main__information_heading">Отзывы</h3>
-                        <br>
-                        <p>тут должны быть отзывы о товаре</p>
+            <div class="main-row-top">
+                <div class="detail_main">
+                    <div class="detail_main__picture">
+                        <img src="{{ product.picture.url }}" alt="img">
                     </div>
                 </div>
-
-            </div>
-            <div class="detail_side">
-                <div class="detail_oder">
-                    <div class="detail_card">
-                        <div class="detail_name">
-                            {{ product.name }}
+                <div class="detail_side">
+                    <div class="detail_oder">
+                        <div class="detail_card">
+                            <div class="detail_name">
+                                {{ product.name }}
+                            </div>
+                            <div class="detail_rating">
+                                rating
+                            </div>
+                            <div class="detail_review">
+                                review
+                            </div>
+                            <div class="detail_price">
+                                <div class="detail_price__1">Price</div>
+                                <div class="detail_price__2">{{ product.price }} грн</div>
+                            </div>
+                            <div class="detail_quantity">
+                                <div class="detail_quantity__1">Quantity</div>
+                                <div class="detail_quantity__2"></div>
+                            </div>
+                            <div class="detail_total">
+                                <div class="detail_total__1">Total</div>
+                                <div class="detail_total__2">0 грн</div>
+                            </div>
+                            <button class="detail_order_btn">to cart</button>
                         </div>
-                        <div class="detail_rating">
-                            rating
-                        </div>
-                        <div class="detail_review">
-                            review
-                        </div>
-                        <div class="detail_price">
-                            <div class="detail_price__1">Цена</div>
-                            <div class="detail_price__2">{{ product.price }} грн</div>
-                        </div>
-                        <div class="detail_quantity">
-                            <div class="detail_quantity__1">Количество</div>
-                            <div class="detail_quantity__2"></div>
-                        </div>
-                        <div class="detail_total">
-                            <div class="detail_total__1">Итого к оплате</div>
-                            <div class="detail_total__2">100 грн</div>
-                        </div>
-                        <button class="detail_order_btn">КУПИТЬ</button>
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+
+            <div class="detail_main__information">
+                <div class="tab">
+                    <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">Description</button>
+                    <button class="tablinks" onclick="openCity(event, 'Paris')">Details</button>
+                    <button class="tablinks" onclick="openCity(event, 'Tokyo')">Comments</button>
+                </div>
+                <div id="London" class="tabcontent">
+                    <h3 class="detail_main__information_heading">{{ product.name }}</h3>
+                    <br>
+                    <p>{{ product.description }}</p>
+                    <p>Weight {{ product.weight }}</p>
+                    <p></p>
+                </div>
+                <div id="Paris" class="tabcontent">
+                    <h3 class="detail_main__information_heading">Details</h3>
+                    <div>
+                        <br>
+                        <p>Calories: 420</p>
+                        <p>Fat: 54</p>
+                        <p>Protein: 27</p>
+                        <p>Carbohydrates: 18</p>
+                        <p>Weight: 500 gr</p>
+                    </div>
+                </div>
+                <div id="Tokyo" class="tabcontent">
+                    <h3 class="detail_main__information_heading">NO DATA</h3>
+                    <br>
+                    <p>No data</p>
+                </div>
+            </div>
+
+
+
     </div>
+
+
+
+
+
+
+
 
 {% endblock %}
 
