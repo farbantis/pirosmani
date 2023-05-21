@@ -5,8 +5,7 @@ from pirosmani.utils.constants import EMAIL_NEW_USER_REG
 from celery import shared_task
 
 
-# @shared_task
-@app.task
+@shared_task
 def transaction_email_notification(user):
     email = user.email
     subject = f'registration confirmation'
