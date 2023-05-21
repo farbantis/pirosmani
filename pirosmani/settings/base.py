@@ -1,7 +1,6 @@
 import braintree
 import os
 from pathlib import Path
-from django.core.cache.backends.redis import RedisCache
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -25,13 +24,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cafe.apps.CafeConfig',
     'account.apps.AccountConfig',
+
     # 'debug_toolbar',
     'bootstrap5',
     'rest_framework',
     'rest_framework.authtoken',
     'braintree',
     'import_export',
-
+    'celery',
 ]
 
 MIDDLEWARE = [
@@ -125,9 +125,9 @@ REST_FRAMEWORK = {
 
 FORCE_KILL_TOKEN = 600000000000000
 
-REDIS_HOST = 'localhost'
-REDIS_PORT = 6379
-REDIS_DB = 0
+# REDIS_HOST = 'localhost'
+# REDIS_PORT = 6379
+# REDIS_DB = 0
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')

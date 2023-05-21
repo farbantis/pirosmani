@@ -18,8 +18,8 @@ DATABASES = {
 ALLOWED_HOSTS = ['localhost', os.getenv('ALLOWED_HOSTS_IP'), 'qimeer.online', '.qimeer.online']
 
 # CELERY SETTINGS
-broker_url = os.getenv('broker_url')  # Use Redis on the VPS server
-result_backend = os.getenv('result_backend')  # Use Redis on the VPS server
+# broker_url = os.getenv('broker_url')  # Use Redis on the VPS server
+# result_backend = os.getenv('result_backend')  # Use Redis on the VPS server
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
