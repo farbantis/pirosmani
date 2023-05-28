@@ -12,7 +12,7 @@ from django.views.generic import DetailView, ListView
 from django.conf import settings
 from .mixins import ContextMixin, CartActionsMixin
 from .models import Product, Order, OrderItems, Coupon
-from .tasks import transaction_email_notification
+from .tasks import transaction_email_notification, send_products_to_redis_with_frequency
 
 
 class Index(ContextMixin, ListView):
@@ -348,3 +348,6 @@ def order_pdf(request, order_id):
         stylesheets=[weasyprint.CSS(str(settings.STATIC_ROOT) + '/cafe/css/pdf.css')])
     return response
 
+
+def test_product(request):
+    redis_date = send_products_to_redis_with_frequency()

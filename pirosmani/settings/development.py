@@ -22,3 +22,19 @@ DATABASES = {
 
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+REDIS_HOST = 'localhost'  # Replace with your Redis host
+REDIS_PORT = 6379  # Replace with your Redis port
+REDIS_DB = 0  # Replace with your Redis database number
+
+# Create a Redis connection pool
+# REDIS_POOL = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/',
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
