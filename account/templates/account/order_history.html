@@ -21,6 +21,11 @@
                             {% else %}
                                 In progress
                             {% endif %} </span></p>
+                            {% if user_order.is_completed %}
+                            <p class="history_order_pdf">
+                                <a href="{% url 'cafe:order_pdf' %}?order_id={{ user_order.id }}" target="_blank">Download pdf Invoice</a>
+                            </p>
+                            {% endif %}
                         </div>
                         <div class="history_items">
                             {% for item in user_order.orderitems_set.all %}
