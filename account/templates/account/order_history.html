@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    История заказов
+    Order history
 {% endblock %}
 
 {% block main_content %}
@@ -44,7 +44,7 @@
                                 </div>
                             {% endfor %}
                             <a href="{% url 'cafe:reorder' %}?order_id={{ user_order.id }}">
-                                <div class="history_repeat">Add to current order</div>
+                                <div class="history_repeat">Add to current order / Reorder</div>
                             </a>
                         </div>
                     </div>
@@ -53,3 +53,5 @@
         </div>
     </div>
 {% endblock %}
+
+

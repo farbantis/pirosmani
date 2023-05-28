@@ -6,7 +6,10 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
+from django.views import View
 from django.views.generic import CreateView, UpdateView, ListView
+
+from cafe.mixins import ContextMixin
 from cafe.models import Order, OrderItems, Product
 from .forms import UserRegistrationForm, UserLoginForm, UserEditForm, CustomerAddEditForm
 from .models import Customer, User
@@ -17,7 +20,13 @@ def user_dashboard(request):
     return render(request, 'account/user_dashboard.html')
 
 
-class OrderHistoryView(LoginRequiredMixin, ListView):
+class DashboardView(ContextMixin, View):
+
+    def get(self, request):
+        return render(request, 'account/user_dashboard.html')
+
+
+class OrderHistoryView(LoginRequiredMixin, ContextMixin, ListView):
     template_name = 'account/order_history.html'
     context_object_name = 'user_orders'
     model = Order
@@ -31,20 +40,6 @@ class OrderHistoryView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         query_set = super(OrderHistoryView, self).get_queryset()
         return query_set.order_by('-date_ordered')
-
-
-@login_required()
-def order_history(request):
-    user_orders = Order.objects\
-        .filter(customer=request.user)\
-        .order_by('-date_ordered')
-    user_order_items = OrderItems.objects\
-        .filter(order__customer=request.user)
-    # , order__is_completed = True
-    context = {'user_orders': user_orders,
-               'user_order_items': user_order_items,
-               }
-    return render(request, 'account/order_history.html', context)
 
 
 class RegisterUserView(CreateView):
