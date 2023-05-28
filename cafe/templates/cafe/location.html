@@ -1,0 +1,21 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block main_content %}
+
+    <div class="container">
+        <div class="row_login">
+                your current ip is: {{ ip }}
+            <div>country: {{ user_location_data.country }}</div>
+            <div>city: {{ user_location_data.city }}</div>
+            <div>zip: {{ user_location_data.zip }}</div>
+            <div>latitude:{{ user_location_data.lat }}</div>
+            <div>longitude: {{ user_location_data.lon }}</div>
+            <div>and the distance to the shop is {{ distance }}</div>
+            <div>{{ closest_shop }}</div>
+            <div class="login_title">
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -6,7 +6,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView
 from cafe.models import Order, OrderItems, Product
 from .forms import UserRegistrationForm, UserLoginForm, UserEditForm, CustomerAddEditForm
 from .models import Customer, User
@@ -15,6 +15,22 @@ from .models import Customer, User
 @login_required()
 def user_dashboard(request):
     return render(request, 'account/user_dashboard.html')
+
+
+class OrderHistoryView(LoginRequiredMixin, ListView):
+    template_name = 'account/order_history.html'
+    context_object_name = 'user_orders'
+    model = Order
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        contex_data = super(OrderHistoryView, self).get_context_data(**kwargs)
+        user_order_items = OrderItems.objects.filter(order__customer=self.request.user)
+        contex_data['user_order_items'] = user_order_items
+        return contex_data
+
+    def get_queryset(self):
+        query_set = super(OrderHistoryView, self).get_queryset()
+        return query_set.order_by('-date_ordered')
 
 
 @login_required()

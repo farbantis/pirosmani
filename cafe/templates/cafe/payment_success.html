@@ -3,6 +3,7 @@
 {% block main_contentdelivery %}
     <h2 class="container">Your payment was successful</h2>
     <div>you will be redirected to the main page</div>
+    <div>{{ pdf_data }}</div>
     <script>
         setTimeout(function () {
             window.location.href = "{% url 'cafe:main_page' %}";

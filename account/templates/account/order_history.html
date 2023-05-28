@@ -9,42 +9,47 @@
     <div class="container">
         <div class="history_row">
             {% for user_order in user_orders %}
-                <div class="history_info">
-                    <div class="history_order_card">
-                        <p>Order #: <span class="order_cart_number">{{ user_order.transaction_id }}</span> </p>
-                        <p>Payment method:</p>
-                        <p>Order date: <span class="order_card_date">{{ user_order.date_ordered }}</span></p>
-                        <p>Delivery date:</p>
-                        <p>Order status: <span class="order_card_date">
+                {% if user_order.get_order_cost > 1 %}
+                    <div class="history_info">
+                        <div class="history_order_card">
+                            <p>Order #: <span class="order_cart_number">{{ user_order.transaction_id }}</span></p>
+                            <p>Order date: <span class="order_card_date">{{ user_order.date_ordered }}</span></p>
+                            <p>Delivery date:</p>
+                            <p>Order status: <span class="order_card_date">
                             {% if user_order.is_completed %}
                                 Completed
                             {% else %}
                                 In progress
                             {% endif %} </span></p>
-                    </div>
-                    <div class="history_items">
-                        {% for item in user_order.orderitems_set.all %}
-                            <div class="history_items_wrapper">
-                                <div class="history_picture">
-                                    <img src="{{ item.product.picture.url }}" width="100px" alt="prod pict">
+                        </div>
+                        <div class="history_items">
+                            {% for item in user_order.orderitems_set.all %}
+                                <div class="history_items_wrapper">
+                                    <div class="history_picture">
+                                        <img src="{{ item.product.picture.url }}" width="100px" alt="prod pict">
+                                    </div>
+                                    <div class="history_data_wrapper">
+                                        <div class="history_product_name">
+                                            {{ item.product }}
+                                        </div>
+                                        <div>
+                                            {{ item.quantity }}
+                                            {% if item.quantity > 1 %}
+                                                pcs
+                                            {% else %}
+                                                pc
+                                            {% endif %} {{ item.get_items_cost }} uah
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="history_data_wrapper">
-                                    <div class="history_product_name">
-                                        {{ item.product }}
-                                    </div>
-                                    <div>
-                                        {{ item.quantity }} шт
-                                    </div>
-                                    <div>
-                                        {{ item.get_items_cost }} грн
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    <a href="{% url 'cafe:cart' %}"><div class="history_repeat">Order again</div></a>
+                            {% endfor %}
+                            <a href="{% url 'cafe:reorder' %}?order_id={{ user_order.id }}">
+                                <div class="history_repeat">Add to current order</div>
+                            </a>
+                        </div>
                     </div>
-            </div>
-                {% endfor %}
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
 {% endblock %}
