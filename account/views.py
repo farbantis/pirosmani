@@ -8,25 +8,18 @@ from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
 from django.views import View
 from django.views.generic import CreateView, UpdateView, ListView
-
-from cafe.mixins import ContextMixin
 from cafe.models import Order, OrderItems, Product
 from .forms import UserRegistrationForm, UserLoginForm, UserEditForm, CustomerAddEditForm
 from .models import Customer, User
 
 
-@login_required()
-def user_dashboard(request):
-    return render(request, 'account/user_dashboard.html')
-
-
-class DashboardView(ContextMixin, View):
+class DashboardView(LoginRequiredMixin, View):
 
     def get(self, request):
         return render(request, 'account/user_dashboard.html')
 
 
-class OrderHistoryView(LoginRequiredMixin, ContextMixin, ListView):
+class OrderHistoryView(LoginRequiredMixin, ListView):
     template_name = 'account/order_history.html'
     context_object_name = 'user_orders'
     model = Order
