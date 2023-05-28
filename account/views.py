@@ -49,6 +49,7 @@ class RegisterUserView(CreateView):
             messages.add_message(request, messages.SUCCESS, f'user was created')
             return redirect('account:login')
         else:
+            messages.add_message(request, messages.ERROR, f'check input data')
             form = UserRegistrationForm()
         return render(request, 'account/user_register.html', {'form': form})
 
@@ -61,7 +62,6 @@ class UserLoginView(LoginView):
     def get_success_url(self):
         if self.request.user.is_staff:
             return '/'
-            # redirect_to = '/admin_panel/'
         elif json.loads(self.request.COOKIES.get('cart', '[]')):
             return reverse_lazy('cafe:cart')
         else:
@@ -84,6 +84,10 @@ class UserLoginView(LoginView):
                         quantity=int(quantity))
                 response.set_cookie('cart', {})
         return response
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid login credentials. Please try again.')
+        return super().form_invalid(form)
 
 
 class UserLogoutView(LogoutView):

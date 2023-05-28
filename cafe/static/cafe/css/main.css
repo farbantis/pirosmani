@@ -50,6 +50,13 @@ body {
     margin: 0 auto;
 }
 
+.messages-log{
+    color: red;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
+}
+
 /* HEADER */
 header {
     font-style: normal;

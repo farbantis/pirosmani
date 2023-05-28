@@ -11,10 +11,17 @@
             <div class="login_title">
                 Registration
             </div>
+            <div class="messages-log">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
             <form method="post">
                 {% csrf_token %}
                 <div class="login_username login_align">
-{#                    {{ form.username.errors }}#}
+                    {#                    {{ form.username.errors }}#}
                     {{ form.email }}
                 </div>
                 <div class="login_password login_align">
@@ -29,34 +36,5 @@
             </form>
         </div>
     </div>
-
-
-
-    {#    <div class="container">#}
-    {#        <div class="registration_row">#}
-    {#            <div class="registration_card">#}
-    {#                <div class="form_container">#}
-    {#                    <form id="form" method="post">#}
-    {#                        {% csrf_token %}#}
-    {#                        <div class="login_username login_align">#}
-    {#                            {{ form.username.errors }}#}
-    {#                            {{ form.email }}#}
-    {#                        </div>#}
-    {#                        <div class="login_password login_align">#}
-    {#                            {{ form.password }}#}
-    {#                        </div>#}
-    {#                        <div class="login_password login_align">#}
-    {#                            {{ form.password1 }}#}
-    {#                        </div>#}
-    {#                        <div class="login_btn">#}
-    {#                            <button class="btn_registration" type="submit">ЗАРЕГИСТРИРОВАТЬСЯ</button>#}
-    {#                        </div>#}
-    {##}
-    {#                    </form>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#        </div>#}
-    {#    </div>#}
-    {##}
 
 {% endblock %}
