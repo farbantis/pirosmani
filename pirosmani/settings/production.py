@@ -15,7 +15,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['*', 'localhost', os.getenv('ALLOWED_HOSTS_IP'), 'qimeer.online', '.qimeer.online']
+ALLOWED_HOSTS = ['localhost', '191.96.53.71', 'qimeer.online', '.qimeer.online', 'mail.qimeer.online']
 
 # CELERY SETTINGS
 # broker_url = os.getenv('broker_url')  # Use Redis on the VPS server
