@@ -12,7 +12,7 @@ from django.views.generic import DetailView, ListView
 from django.conf import settings
 from .mixins import ContextMixin, CartActionsMixin
 from .models import Product, Order, OrderItems, Coupon
-from .tasks import transaction_email_notification, send_products_to_redis_with_frequency
+from .tasks import transaction_email_notification
 
 
 class Index(ContextMixin, ListView):
