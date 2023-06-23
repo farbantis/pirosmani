@@ -7,6 +7,8 @@ INSTALLED_APPS += ["debug_toolbar"]
 
 MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+INTERNAL_IPS = ["127.0.0.1"]
 
 DATABASES = {
     'default': {
@@ -15,23 +17,9 @@ DATABASES = {
     }
 }
 
-# CELERY SETTINGS
+CELERY_BROKER_URL = 'redis://localhost'  # Use Redis on the local machine
+CELERY_RESULT_BACKEND = 'redis://localhost'  # Use Redis on the local machine
 
-# broker_url = 'redis://localhost'  # Use Redis on the local machine
-# result_backend = 'redis://localhost'  # Use Redis on the local machine
-
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
-# Create a Redis connection pool
-# REDIS_POOL = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
-
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django_redis.cache.RedisCache',
-#         'LOCATION': 'redis://127.0.0.1:6379/',
-#         'OPTIONS': {
-#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#         }
-#     }
-# }
+# REDIS_HOST = 'localhost'
+# REDIS_PORT = 6379
+# REDIS_DB = 0

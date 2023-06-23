@@ -219,9 +219,8 @@ class CheckOut(View):
             order.is_completed = True
             order.transaction_id = result.transaction.id
             order.save()
-            pdf_data = order_pdf(request, order.id)
             #  transaction_email_notification(request.user)
-            return redirect('cafe:payment_success', pdf_data)
+            return redirect('cafe:payment_success')
         else:
             # return JsonResponse({'success': False, 'message': result.message})
             return redirect('cafe:payment_fail')
@@ -336,18 +335,3 @@ class OrderPDF(View):
             response,
             stylesheets=[weasyprint.CSS(str(settings.STATIC_ROOT) + '/cafe/css/pdf.css')])
         return response
-
-
-def order_pdf(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    html = render_to_string('cafe/pdf_receipt.html', {'order': order})
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'filename=order_{order.id}.pdf'
-    weasyprint.HTML(string=html).write_pdf(
-        response,
-        stylesheets=[weasyprint.CSS(str(settings.STATIC_ROOT) + '/cafe/css/pdf.css')])
-    return response
-
-
-def test_product(request):
-    redis_date = send_products_to_redis_with_frequency()

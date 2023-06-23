@@ -17,6 +17,8 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['localhost', os.getenv('ALLOWED_HOSTS_IP'), 'qimeer.online', '.qimeer.online']
 
+INTERNAL_IPS = []
+
 # CELERY SETTINGS
 # broker_url = os.getenv('broker_url')  # Use Redis on the VPS server
 # result_backend = os.getenv('result_backend')  # Use Redis on the VPS server
@@ -43,5 +45,3 @@ if USE_S3:
 else:
     STATIC_URL = 'static/'
     STATIC_ROOT = BASE_DIR / 'static/'
-
-# STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)

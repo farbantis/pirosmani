@@ -9,10 +9,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
-
 AUTH_USER_MODEL = 'account.User'
 
 INSTALLED_APPS = [
@@ -24,7 +20,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cafe.apps.CafeConfig',
     'account.apps.AccountConfig',
-    # 'debug_toolbar',
     'bootstrap5',
     'rest_framework',
     'rest_framework.authtoken',
@@ -32,7 +27,6 @@ INSTALLED_APPS = [
     'import_export',
     'celery',
     'storages',
-
 ]
 
 MIDDLEWARE = [
@@ -43,7 +37,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'pirosmani.urls'
@@ -126,13 +119,6 @@ REST_FRAMEWORK = {
 }
 
 FORCE_KILL_TOKEN = 600000000000000
-
-# REDIS_HOST = 'localhost'
-# REDIS_PORT = 6379
-# REDIS_DB = 0
-
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
 BRAINTREE_MERCHANT_ID = os.getenv('BRAINTREE_MERCHANT_ID')
 BRAINTREE_PUBLIC_KEY = os.getenv('BRAINTREE_PUBLIC_KEY')
