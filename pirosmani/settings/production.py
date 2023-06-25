@@ -22,6 +22,8 @@ INTERNAL_IPS = []
 # CELERY SETTINGS
 # broker_url = os.getenv('broker_url')  # Use Redis on the VPS server
 # result_backend = os.getenv('result_backend')  # Use Redis on the VPS server
+CELERY_BROKER_URL = 'redis://localhost'  # Use Redis on the local machine
+CELERY_RESULT_BACKEND = 'redis://localhost'  # Use Redis on the local machine
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
