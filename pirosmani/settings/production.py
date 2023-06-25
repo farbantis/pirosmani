@@ -15,7 +15,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', os.getenv('ALLOWED_HOSTS_IP'), 'qimeer.online', '.qimeer.online']
+ALLOWED_HOSTS = ['localhost', '191.96.53.71', 'qimeer.online', '.qimeer.online']
 
 INTERNAL_IPS = []
 
